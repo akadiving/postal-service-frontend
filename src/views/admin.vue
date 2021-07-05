@@ -164,7 +164,7 @@ export default {
   methods: {
     //logs out by removing admin key from local storage
     logout() {
-      axios.post('http://127.0.0.1:8000/api/logout/', {
+      axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
         refresh_token: sessionStorage.getItem('refresh')
       })
       .then((response) => {
@@ -294,7 +294,7 @@ export default {
     //get current user
     getUser(){
       let accessToken = JSON.parse(sessionStorage.getItem('access'))
-      const baseURL = `http://127.0.0.1:8000/users/me/`;
+      const baseURL = `https://postal-service-test.herokuapp.com/users/me/`;
       const options = {
           method: 'GET',
           baseURL: baseURL,

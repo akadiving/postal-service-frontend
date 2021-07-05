@@ -6,6 +6,7 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import Axios from "axios";
 import vueCountryRegionSelect from 'vue-country-region-select'
 Vue.use(vueCountryRegionSelect)
 
@@ -18,7 +19,7 @@ const options = {
 
 Vue.use(Toast, options);
 
-
+Axios.defaults.baseURL = ('https://postal-service-test.herokuapp.com/') ? 'http://localhost:8000/' : '';
 Vue.config.productionTip = false;
 
 new Vue({

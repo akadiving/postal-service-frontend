@@ -291,7 +291,7 @@ export default {
     methods: {
         getManifest(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/manifest/${this.manifestID}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/manifest/${this.manifestID}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -332,7 +332,7 @@ export default {
         // removes selected item from manifest
         removeItem () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/update/${this.selectItem}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/update/${this.selectItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -392,7 +392,7 @@ export default {
         },
         showBarcode(item){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/generate-pdf/${item}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/generate-pdf/${item}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -436,7 +436,7 @@ export default {
             this.$emit('closeManifestDetail')
         },
         logout() {
-            axios.post('http://127.0.0.1:8000/api/logout/', {
+            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {

@@ -614,7 +614,7 @@ export default {
         addItem(){
             console.log(this.newItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/add/`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/add/`;
             const options = {
                 method: 'POST',
                 baseURL: baseURL,
@@ -679,7 +679,7 @@ export default {
             this.$emit('closeComponent')
         },
         logout() {
-            axios.post('http://127.0.0.1:8000/api/logout/', {
+            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
@@ -709,7 +709,7 @@ export default {
         },
         manifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/manifest/search/?=`;
+            const baseURL = `https://postal-service-test.herokuapp.com/manifest/search/?=`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,

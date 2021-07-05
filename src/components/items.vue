@@ -590,7 +590,7 @@ export default {
     methods: {
         itemSearch(item){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/search/?=${item}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/search/?=${item}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -746,7 +746,7 @@ export default {
         async showBarcode(item){
             this.barcodeDialog = true
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/generate-pdf/${item}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/generate-pdf/${item}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -786,7 +786,7 @@ export default {
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/bulk-delete/`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/bulk-delete/`;
             const options = {
                 method: 'DELETE',
                 baseURL: baseURL,
@@ -865,7 +865,7 @@ export default {
             delete this.editedItem['barcode_image']
             delete this.editedItem['manifest_code']
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/update/${this.selectEditItem}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/update/${this.selectEditItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -922,7 +922,7 @@ export default {
             this.$emit('closeItems')
         },
         logout() {
-            axios.post('http://127.0.0.1:8000/api/logout/', {
+            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
@@ -968,7 +968,7 @@ export default {
         },
         changeManifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/update-manifest/`;
+            const baseURL = `https://postal-service-test.herokuapp.com/items/update-manifest/`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -1039,7 +1039,7 @@ export default {
         },
         manifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/manifest/search/?=`;
+            const baseURL = `https://postal-service-test.herokuapp.com/manifest/search/?=`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,

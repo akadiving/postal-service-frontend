@@ -305,7 +305,7 @@ export default {
     methods: {
         manifestSearch(manifest){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/manifest/search/?=${manifest}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/manifest/search/?=${manifest}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -452,7 +452,7 @@ export default {
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/manifest/delete/${this.selectManifest}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/manifest/delete/${this.selectManifest}`;
             const options = {
                 method: 'DELETE',
                 baseURL: baseURL,
@@ -519,7 +519,7 @@ export default {
         save () {
             console.log(this.editedItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/manifest/update/${this.selectEditItem}`;
+            const baseURL = `https://postal-service-test.herokuapp.com/manifest/update/${this.selectEditItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -577,7 +577,7 @@ export default {
             this.$emit('closeManifest')
         },
         logout() {
-            axios.post('http://127.0.0.1:8000/api/logout/', {
+            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
