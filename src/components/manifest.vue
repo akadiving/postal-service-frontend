@@ -21,6 +21,7 @@
             label="მანიფესტის მოძებნა"
             single-line
             hide-details
+            clearable
             ></v-text-field>
         </v-card-title>
         <v-data-table
@@ -154,7 +155,7 @@
             </template> 
             <template v-slot:item.total_weight="{ item }">
                 <p>
-                    {{ (item.total_weight/1000).toFixed(2) }} კგ
+                    {{ item.total_weight}} კგ
                 </p>
             </template>
             <template v-slot:item.actions="{ item }">
@@ -305,8 +306,14 @@ export default {
     methods: {
         manifestSearch(manifest){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/manifest/search/?=${manifest}`;
-            const options = {
+            let baseURL = ``;
+            if(!manifest){
+                baseURL = `https://apimyposta.online/manifest/search/?search=`;
+            } else {
+                baseURL = `https://apimyposta.online/manifest/search/?search=${manifest}`;
+            }
+            
+            let options = {
                 method: 'GET',
                 baseURL: baseURL,
                 timeout: 5000,
@@ -452,7 +459,7 @@ export default {
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/manifest/delete/${this.selectManifest}`;
+            const baseURL = `https://apimyposta.online/manifest/delete/${this.selectManifest}`;
             const options = {
                 method: 'DELETE',
                 baseURL: baseURL,
@@ -519,7 +526,7 @@ export default {
         save () {
             console.log(this.editedItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/manifest/update/${this.selectEditItem}`;
+            const baseURL = `https://apimyposta.online/manifest/update/${this.selectEditItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -577,7 +584,7 @@ export default {
             this.$emit('closeManifest')
         },
         logout() {
-            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
+            axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {

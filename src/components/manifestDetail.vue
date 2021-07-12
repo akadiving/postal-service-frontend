@@ -152,7 +152,7 @@
                                         mdi-weight-kilogram
                                     </v-icon>
                                 </v-avatar>  
-                                სულ წონა - {{(manifest.total_weight/1000).toFixed(2)}} კგ
+                                სულ წონა - {{manifest.total_weight}} კგ
                             </v-chip>
                         </v-list-item>
                     </v-list>
@@ -206,7 +206,7 @@
                 @click="showBarcode(item.id)"
                 color='purple'
             >
-                mdi-file-document-outline
+                mdi-sticker-check-outline
             </v-icon>
             </template>
             <template v-slot:item.manifest_number="{ item }">
@@ -226,10 +226,54 @@
                     {{item.manifest_code}}
                 </v-chip>
             </template>
-            <template v-slot:expanded-item="{ item }">
+            <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length">
-                    
-                </td>
+                    <v-row justify="center" align="center">
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            ფასი - {{item.price}} {{item.currency}}
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            წონა - {{item.weight}} კგ
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            ავტორი - {{item.owner}} 
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            კომპანია - {{item.company}} 
+                        </v-col>
+                        
+                        <v-col cols='auto' class="ma-2">
+                            ჩამოსულია - <v-chip
+                                v-if="!item.arrived"
+                                color='red'
+                                dark
+                                outlined
+                                
+                            >
+                                არა
+                            </v-chip>
+                            <v-chip
+                                v-else
+                                color='green'
+                                dark
+                                outlined
+                            >
+                                კი
+                            </v-chip> 
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            <v-textarea
+                            outlined
+                            readonly
+                            auto-grow
+                            hide-details
+                            rows="1"
+                            label="აღწერა"
+                            :value="item.description"
+                            ></v-textarea>
+                        </v-col>
+                    </v-row>
+                </td>  
             </template>
         </v-data-table>
         <!-- items list -->
@@ -283,7 +327,7 @@ export default {
           { text: 'გამ. ქალაქი', value: 'sender_city' },
           { text: 'მიმღების ID', value: 'receiver_id' },
           { text: 'წაშლა', value: 'actions', sortable: false },
-          { text: 'ინვოისი', value: 'document', sortable: false },
+          { text: 'სტიკერი', value: 'document', sortable: false },
           { text: '', value: 'data-table-expand' },
         ],
     }),
@@ -291,7 +335,7 @@ export default {
     methods: {
         getManifest(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/manifest/${this.manifestID}`;
+            const baseURL = `https://apimyposta.online/manifest/${this.manifestID}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -332,7 +376,7 @@ export default {
         // removes selected item from manifest
         removeItem () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/items/update/${this.selectItem}`;
+            const baseURL = `https://apimyposta.online/items/update/${this.selectItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -390,19 +434,19 @@ export default {
                 }); 
             })  
         },
-        showBarcode(item){
+        async showBarcode(item){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/items/generate-pdf/${item}`;
+            const baseURL = `https://apimyposta.online/items/generate_sticker/${item}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
+                timeout: 10000,
                 responseType: "blob",
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
                 }, 
             };
-            axios(options)
+            await axios(options)
             .then((response) => {
                 console.log(response)
                 const blob = new Blob([response.data],{type: 'application/pdf'});
@@ -436,7 +480,7 @@ export default {
             this.$emit('closeManifestDetail')
         },
         logout() {
-            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
+            axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {

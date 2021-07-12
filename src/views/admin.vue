@@ -16,13 +16,13 @@
       <v-divider></v-divider>
 
       <v-list rounded>
-        <v-list-item link @click="logout">
-          <v-list-item-avatar color='warning'>
-            <v-icon dark>mdi-logout</v-icon>
+        <v-list-item @click="close">
+          <v-list-item-avatar color='green'>
+            <v-icon dark>mdi-home-outline</v-icon>
           </v-list-item-avatar>
-          <v-list-item-title>გამოსვლა</v-list-item-title>
+          <v-list-item-title>მთავარი გვერდი</v-list-item-title>
         </v-list-item>
-
+        
         <v-list-item @click="items">
           <v-list-item-avatar color='purple'>
             <v-icon dark>mdi-package-variant-closed</v-icon>
@@ -36,11 +36,12 @@
           </v-list-item-avatar>
           <v-list-item-title>მანიფესტები</v-list-item-title>
         </v-list-item>
-        <v-list-item @click="close">
-          <v-list-item-avatar color='green'>
-            <v-icon dark>mdi-home-outline</v-icon>
+
+        <v-list-item link @click="logout">
+          <v-list-item-avatar color='warning'>
+            <v-icon dark>mdi-logout</v-icon>
           </v-list-item-avatar>
-          <v-list-item-title>მთავარი გვერდი</v-list-item-title>
+          <v-list-item-title>გამოსვლა</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -164,7 +165,7 @@ export default {
   methods: {
     //logs out by removing admin key from local storage
     logout() {
-      axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
+      axios.post('https://apimyposta.online/api/logout/', {
         refresh_token: sessionStorage.getItem('refresh')
       })
       .then((response) => {
@@ -294,7 +295,7 @@ export default {
     //get current user
     getUser(){
       let accessToken = JSON.parse(sessionStorage.getItem('access'))
-      const baseURL = `https://postal-service-test.herokuapp.com/users/me/`;
+      const baseURL = `https://apimyposta.online/users/me/`;
       const options = {
           method: 'GET',
           baseURL: baseURL,

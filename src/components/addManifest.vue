@@ -15,7 +15,7 @@
             </v-avatar>
           </v-app-bar>
 
-        <!-- add item form -->
+        <!-- add manifest form -->
         <v-form v-model="valid">
             <v-container fill-height fluid>
             <v-row justify='start' align="center">
@@ -24,19 +24,14 @@
                 md="4"
                 sm="6"
                 >
-                <v-autocomplete
-                    class='elevation-0'
-                    outlined
-                    clearable
-                    required
-                    item-text="country"
-                    item-value="country"
+                <v-text-field
+                    v-model="newManifest.sender_city"
                     label="გამომგზავნი ქალაქი"
-                    background-color="white"
-                    :items="cities"
-                    v-model="newManifest.receiver_country"
+                    required
+                    outlined
                     prepend-inner-icon="mdi-home-city"
-                    ></v-autocomplete>
+                    clearable
+                ></v-text-field>
 
                 </v-col>
                 <v-col
@@ -117,9 +112,9 @@
         </v-form>
         <v-divider></v-divider>
         <v-card-actions>
-        <!-- add item form -->
+        <!-- add manifest form -->
 
-        <!-- add item preview -->   
+        <!-- add manifest preview -->   
         <template>
         <div class="text-center">
             <v-dialog
@@ -219,7 +214,7 @@
             </v-dialog>
         </div>
         </template>
-        <!-- add item preview -->
+        <!-- add manifest preview -->
         </v-card-actions>
     </v-card>  
 </template>
@@ -274,7 +269,7 @@ export default {
         addManifest(){
             console.log(this.newItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/manifest/add/`;
+            const baseURL = `https://apimyposta.online/manifest/add/`;
             const options = {
                 method: 'POST',
                 baseURL: baseURL,
@@ -341,7 +336,7 @@ export default {
             this.$emit('closeComponent')
         },
         logout() {
-            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
+            axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {

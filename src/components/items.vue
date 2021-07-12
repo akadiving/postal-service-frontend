@@ -22,6 +22,7 @@
             label="ამანათის მოძებნა"
             single-line
             hide-details
+            clearable
             ></v-text-field>
         </v-card-title>
         <div>
@@ -49,6 +50,16 @@
                 <v-toolbar
                     flat
                 >
+                    <v-btn  
+                    large 
+                    text
+                    class="ma-2">
+                        <v-icon large
+                        color="green"
+                        @click="exportExcell">
+                            mdi-microsoft-excel
+                        </v-icon>
+                    </v-btn>
                     <!-- edit dialog -->
                     <v-dialog
                     v-model="dialog"
@@ -360,7 +371,7 @@
                 @click="showBarcode(item.id)"
                 color='purple'
             >
-                mdi-file-document-outline
+                mdi-sticker-check-outline
             </v-icon>
             </template>
             <template v-slot:item.add_manifest="{ item }">
@@ -390,58 +401,54 @@
                     {{item.manifest_code}}
                 </v-chip>
             </template>
-            <template v-slot:expanded-item="{ item }">
-                <v-container>
-                    <v-simple-table dense>
-                        <template v-slot:default>
-                            <thead :colspan="headers.length">
-                                <tr>
-                                    <th class="text-left">
-                                        ფასი
-                                    </th>
-                                    <th class="text-left">
-                                        ვალუტა
-                                    </th>
-                                    <th class="text-left">
-                                        წონა
-                                    </th>
-                                    <th class="text-left">
-                                        აღწერა
-                                    </th>
-                                    <th class="text-left">
-                                        ავტორი
-                                    </th>
-                                    <th class="text-left">
-                                        კომპანია
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr >
-                                    <td class="text-left">
-                                        {{item.price}}
-                                    </td>
-                                    <td class="text-left">
-                                        {{item.currency}}
-                                    </td>
-                                    <td class="text-left">
-                                        {{ (item.weight/1000).toFixed(2) }} კგ
-                                    </td>
-                                    <td class="text-left">
-                                        {{item.description}}
-                                    </td>
-                                    <td class="text-left">
-                                        {{item.owner}}
-                                    </td>
-                                    <td class="text-left">
-                                        {{item.company}}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </template>
-                    </v-simple-table>
-                </v-container>
-                
+            <template v-slot:expanded-item="{ headers, item }">
+                <td :colspan="headers.length">
+                    <v-row justify="center" align="center">
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            ფასი - {{item.price}} {{item.currency}}
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            წონა - {{item.weight}} კგ
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            ავტორი - {{item.owner}} 
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            კომპანია - {{item.company}} 
+                        </v-col>
+                        
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            ჩამოსულია - <v-chip
+                                v-if="!item.arrived"
+                                color='red'
+                                dark
+                                outlined
+                                
+                            >
+                                არა
+                            </v-chip>
+                            <v-chip
+                                v-else
+                                color='green'
+                                dark
+                                outlined
+                            >
+                                კი
+                            </v-chip> 
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            <v-textarea
+                            outlined
+                            readonly
+                            auto-grow
+                            hide-details
+                            rows="1"
+                            label="აღწერა"
+                            :value="item.description"
+                            ></v-textarea> 
+                        </v-col>
+                    </v-row>
+                </td>
             </template> 
                  
         </v-data-table>
@@ -511,7 +518,7 @@ export default {
           { text: 'მიმღ. ქალაქი', value: 'receiver_city' },
           { text: 'მიმღების ID', value: 'receiver_id' },
           { text: 'შეცვლა', value: 'actions', sortable: false },
-          { text: 'ინვოისი', value: 'document', sortable: false },
+          { text: 'სტიკერი', value: 'document', sortable: false },
           { text: 'მანიფესტში დამ.', value: 'add_manifest' },
           { text: '', value: 'data-table-expand' },
           
@@ -589,8 +596,14 @@ export default {
     },
     methods: {
         itemSearch(item){
+            let baseURL = `https://apimyposta.onlineitems/search/?search=${item}`;
+            if (!item){
+                baseURL = `hhttps://apimyposta.online/items/search/?search=`
+            } else {
+                baseURL = `https://apimyposta.online/items/search/?search=${item}`;
+            }
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/items/search/?=${item}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -600,6 +613,7 @@ export default {
             };
             axios(options)
             .then((response) => {
+                
                 console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
@@ -746,7 +760,7 @@ export default {
         async showBarcode(item){
             this.barcodeDialog = true
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/items/generate-pdf/${item}`;
+            const baseURL = `https://apimyposta.online/items/generate_sticker/${item}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -786,7 +800,7 @@ export default {
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/items/bulk-delete/`;
+            const baseURL = `https://apimyposta.online/items/bulk-delete/`;
             const options = {
                 method: 'DELETE',
                 baseURL: baseURL,
@@ -865,7 +879,7 @@ export default {
             delete this.editedItem['barcode_image']
             delete this.editedItem['manifest_code']
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/items/update/${this.selectEditItem}`;
+            const baseURL = `https://apimyposta.online/items/update/${this.selectEditItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -922,7 +936,7 @@ export default {
             this.$emit('closeItems')
         },
         logout() {
-            axios.post('https://postal-service-test.herokuapp.com/api/logout/', {
+            axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
@@ -968,7 +982,7 @@ export default {
         },
         changeManifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/items/update-manifest/`;
+            const baseURL = `https://apimyposta.online/items/update-manifest/`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -1039,7 +1053,7 @@ export default {
         },
         manifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://postal-service-test.herokuapp.com/manifest/search/?=`;
+            const baseURL = `https://apimyposta.online/manifest/search/?search=`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -1090,6 +1104,93 @@ export default {
                 
             })
         },
+        async exportExcell(){
+            // If there is any selected item takes id from array and appends it to a
+            // newSelected. If not, than this function will take an ID form Items array
+            // and will append it to a newSelected. After that, POST request with the list
+            // of IDs will be sent to return an excel file with specified IDs
+            this.barcodeDialog = true
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `https://apimyposta.online/items/export_excel/`;
+            let options = {
+                method: 'POST',
+                baseURL: baseURL,
+                timeout: 10000,
+                responseType: "blob",
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+                data: {id: this.newSelected.id} 
+            };
+            if (this.selected.length > 0){
+                this.newSelected = []
+                this.selected.forEach(element => {
+                    this.newSelected.push(element.id)
+                });
+                this.newSelected = [...new Set(this.newSelected)]
+                console.log(this.newSelected)
+                options = {
+                    method: 'POST',
+                    baseURL: baseURL,
+                    timeout: 10000,
+                    responseType: "blob",
+                    headers: {
+                        Authorization: 'Bearer ' + accessToken.value
+                    },
+                    data: {id: this.newSelected} 
+                };
+            } else {
+                this.newSelected = []
+                this.items.forEach(element => {
+                    this.newSelected.push(element.id)
+                });
+                this.newSelected = [...new Set(this.newSelected)]
+                console.log(this.newSelected)
+                options = {
+                    method: 'POST',
+                    baseURL: baseURL,
+                    timeout: 10000,
+                    responseType: "blob",
+                    headers: {
+                        Authorization: 'Bearer ' + accessToken.value
+                    },
+                    data: {id: this.newSelected} 
+                };
+            }
+            await axios(options)
+            .then((response) => {
+                console.log(response)
+                const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
+                const link = document.createElement('a');
+                link.href = url;
+                let d = Date.now();
+                d = new Date(d);
+                d = (d.getMonth()+1)+'-'+d.getDate()+'-'+d.getFullYear()+'-'+(d.getHours() > 12 ? d.getHours() - 12 : d.getHours())+':'+d.getMinutes()+'-'+(d.getHours() >= 12 ? "PM" : "AM");
+                link.setAttribute('download', `ამანათები-${d}.xls`);
+                document.body.appendChild(link);
+                link.click();
+                this.barcodeDialog = false
+                this.newSelected = []
+                this.selected = []
+            })
+            .catch((error) => {
+                console.log(error)
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+            })
+        }
     },
     mounted(){
         this.itemSearch()

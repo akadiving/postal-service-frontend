@@ -11,11 +11,11 @@
         <v-card elevation="6">
         <v-toolbar dark color="primary">
             <v-row>
-                <v-col cols='auto'>
+                <v-col cols='10'>
                     <v-toolbar-title>მართვის პანელში შესვლა</v-toolbar-title>
                 </v-col>
                 <v-spacer></v-spacer>
-                <v-col cols='auto'>
+                <v-col cols='2'>
                     <v-icon x-large dark
                     >mdi-account-circle-outline</v-icon
                     >
@@ -100,7 +100,7 @@ export default {
   methods: {
     //handling login workflow with axios
     login() {
-      axios.post('https://postal-service-test.herokuapp.com/api/token/', {
+      axios.post('https://apimyposta.online/api/token/', {
         email: this.email,
         password: this.password
       })
