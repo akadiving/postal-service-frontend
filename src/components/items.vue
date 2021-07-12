@@ -598,7 +598,7 @@ export default {
         itemSearch(item){
             let baseURL = `https://apimyposta.onlineitems/search/?search=${item}`;
             if (!item){
-                baseURL = `hhttps://apimyposta.online/items/search/?search=`
+                baseURL = `https://apimyposta.online/items/search/?search=`
             } else {
                 baseURL = `https://apimyposta.online/items/search/?search=${item}`;
             }
