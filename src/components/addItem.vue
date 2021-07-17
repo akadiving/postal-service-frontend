@@ -589,7 +589,7 @@ export default {
             currency: '',
             in_manifest: '',
             manifest_number: null,
-            description: '',
+            description: null,
         },
         manifestList: [],
         currency: currency,
@@ -615,7 +615,10 @@ export default {
             console.log(this.newItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `https://apimyposta.online/items/add/`;
-            const options = {
+            if (this.newItem.description == null){
+                this.newItem.description = 'Personal Item'
+            }
+            let options = {
                 method: 'POST',
                 baseURL: baseURL,
                 timeout: 5000,
@@ -709,7 +712,7 @@ export default {
         },
         manifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/manifest/search/search/?=`;
+            const baseURL = `https://apimyposta.online/manifest/search/?search=`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
