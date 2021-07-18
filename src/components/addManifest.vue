@@ -380,7 +380,9 @@ export default {
         }
     },
     mounted(){
-
+        if(!this.getWithExpire('access')){
+            this.logout()
+        }
     }  
 }
 </script>
