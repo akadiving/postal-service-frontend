@@ -709,7 +709,7 @@ export default {
         },
         manifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/manifest/search/search/?=`;
+            const baseURL = `http://127.0.0.1:8000/manifest/search/?search=`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,

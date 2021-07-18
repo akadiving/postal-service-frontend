@@ -293,52 +293,14 @@ export default {
       }, 1000);
     },
     //get current user
-    getUser(){
-      let accessToken = JSON.parse(sessionStorage.getItem('access'))
-      const baseURL = `https://apimyposta.online/users/me/`;
-      const options = {
-          method: 'GET',
-          baseURL: baseURL,
-          timeout: 5000,
-          headers: {
-              Authorization: 'Bearer ' + accessToken.value
-          }, 
-      };
-      axios(options)
-      .then((response) => {
-        console.log(response)
-        sessionStorage.setItem('company_name', response.data.company_name)
-        this.adminName = sessionStorage.getItem('company_name')
-      })
-      .catch((error) => {
-        this.errorM = error.response.data.detail
-        this.$toast.error(this.errorM, {
-          position: "bottom-left",
-          timeout: 5000,
-          closeOnClick: true,
-          pauseOnFocusLoss: true,
-          pauseOnHover: true,
-          draggable: true,
-          draggablePercent: 0.6,
-          showCloseButtonOnHover: false,
-          hideProgressBar: false,
-          closeButton: "button",
-          icon: true,
-          rtl: false
-        });
-        if(error.response.data.detail == 'Given token not valid for any token type' || error.response.data.detail == 'User is inactive'){
-          this.logout()
-        }
-      })
-    }
+    
   },
   mounted() {
     document.title = 'მართვის პანელი'
-    if(!this.getWithExpire('access')){
+    this.adminName = sessionStorage.getItem('company_name')
+    if(!sessionStorage.getItem('access')){
       this.loginPage()
     }
-    this.getUser()
-    
   },
 };
 </script>
