@@ -308,9 +308,9 @@ export default {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             let baseURL = ``;
             if(!manifest){
-                baseURL = `https://apimyposta.online/manifest/search/?search=`;
+                baseURL = `http://127.0.0.1:8000/manifest/search/?search=`;
             } else {
-                baseURL = `https://apimyposta.online/manifest/search/?search=${manifest}`;
+                baseURL = `http://127.0.0.1:8000/manifest/search/?search=${manifest}`;
             }
             
             let options = {
@@ -459,7 +459,7 @@ export default {
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/manifest/delete/${this.selectManifest}`;
+            const baseURL = `http://127.0.0.1:8000/manifest/delete/${this.selectManifest}`;
             const options = {
                 method: 'DELETE',
                 baseURL: baseURL,
@@ -526,7 +526,7 @@ export default {
         save () {
             console.log(this.editedItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/manifest/update/${this.selectEditItem}`;
+            const baseURL = `http://127.0.0.1:8000/manifest/update/${this.selectEditItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -584,7 +584,7 @@ export default {
             this.$emit('closeManifest')
         },
         logout() {
-            axios.post('https://apimyposta.online/api/logout/', {
+            axios.post('http://127.0.0.1:8000/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {

@@ -596,11 +596,11 @@ export default {
     },
     methods: {
         itemSearch(item){
-            let baseURL = `https://apimyposta.onlineitems/search/?search=${item}`;
+            let baseURL = `hhttp://127.0.0.1:8000/search/?search=${item}`;
             if (!item){
-                baseURL = `https://apimyposta.online/items/search/?search=`
+                baseURL = `hhttp://127.0.0.1:8000/items/search/?search=`
             } else {
-                baseURL = `https://apimyposta.online/items/search/?search=${item}`;
+                baseURL = `http://127.0.0.1:8000/items/search/?search=${item}`;
             }
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             
@@ -760,7 +760,7 @@ export default {
         async showBarcode(item){
             this.barcodeDialog = true
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/generate_sticker/${item}`;
+            const baseURL = `http://127.0.0.1:8000/items/generate_sticker/${item}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -800,7 +800,7 @@ export default {
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/bulk-delete/`;
+            const baseURL = `http://127.0.0.1:8000/items/bulk-delete/`;
             const options = {
                 method: 'DELETE',
                 baseURL: baseURL,
@@ -879,7 +879,7 @@ export default {
             delete this.editedItem['barcode_image']
             delete this.editedItem['manifest_code']
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/update/${this.selectEditItem}`;
+            const baseURL = `http://127.0.0.1:8000/items/update/${this.selectEditItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -936,7 +936,7 @@ export default {
             this.$emit('closeItems')
         },
         logout() {
-            axios.post('https://apimyposta.online/api/logout/', {
+            axios.post('http://127.0.0.1:8000/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
@@ -982,7 +982,7 @@ export default {
         },
         changeManifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/update-manifest/`;
+            const baseURL = `http://127.0.0.1:8000/items/update-manifest/`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -1053,7 +1053,7 @@ export default {
         },
         manifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/manifest/search/?search=`;
+            const baseURL = `http://127.0.0.1:8000/manifest/search/?search=`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -1111,7 +1111,7 @@ export default {
             // of IDs will be sent to return an excel file with specified IDs
             this.barcodeDialog = true
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/export_excel/`;
+            const baseURL = `http://127.0.0.1:8000/items/export_excel/`;
             let options = {
                 method: 'POST',
                 baseURL: baseURL,

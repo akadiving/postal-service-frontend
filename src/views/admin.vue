@@ -63,7 +63,7 @@
             >
               <v-img src="../assets/package-box-svgrepo-com.svg"></v-img>
             </v-avatar>
-            <v-card-text>
+            <v-card-text class="pb-3">
               <v-row align="center">
                 <v-col class="text-h6 text--primary"
                 cols="12">
@@ -89,7 +89,7 @@
             >
               <v-img src="../assets/list-svgrepo-com.svg"></v-img>
             </v-avatar>
-            <v-card-text>
+            <v-card-text class="pb-3">
               <v-row align="center">
                 <v-col class="text-h6 text--primary"
                 cols="12">

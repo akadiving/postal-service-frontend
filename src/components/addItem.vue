@@ -614,7 +614,7 @@ export default {
         addItem(){
             console.log(this.newItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/add/`;
+            const baseURL = `http://127.0.0.1:8000/items/add/`;
             const options = {
                 method: 'POST',
                 baseURL: baseURL,
@@ -679,7 +679,7 @@ export default {
             this.$emit('closeComponent')
         },
         logout() {
-            axios.post('https://apimyposta.online/api/logout/', {
+            axios.post('http://127.0.0.1:8000/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
@@ -709,7 +709,7 @@ export default {
         },
         manifestId(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/manifest/search/search/?=`;
+            const baseURL = `http://127.0.0.1:8000/manifest/search/search/?=`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,

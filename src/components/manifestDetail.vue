@@ -335,7 +335,7 @@ export default {
     methods: {
         getManifest(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/manifest/${this.manifestID}`;
+            const baseURL = `http://127.0.0.1:8000/manifest/${this.manifestID}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -376,7 +376,7 @@ export default {
         // removes selected item from manifest
         removeItem () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/update/${this.selectItem}`;
+            const baseURL = `http://127.0.0.1:8000/items/update/${this.selectItem}`;
             const options = {
                 method: 'PATCH',
                 baseURL: baseURL,
@@ -436,7 +436,7 @@ export default {
         },
         async showBarcode(item){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/generate_sticker/${item}`;
+            const baseURL = `http://127.0.0.1:8000/items/generate_sticker/${item}`;
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
@@ -480,7 +480,7 @@ export default {
             this.$emit('closeManifestDetail')
         },
         logout() {
-            axios.post('https://apimyposta.online/api/logout/', {
+            axios.post('http://127.0.0.1:8000/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
