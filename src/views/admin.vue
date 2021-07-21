@@ -168,7 +168,7 @@ export default {
       axios.post('https://apimyposta.online/api/logout/', {
         refresh_token: sessionStorage.getItem('refresh')
       })
-      .then((response) => {
+      .then(() => {
         //localStorage.removeItem('access')
         //localStorage.removeItem('refresh')
         sessionStorage.clear();
