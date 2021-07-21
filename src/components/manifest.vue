@@ -464,7 +464,8 @@ export default {
                 }, 
             };
             axios(options)
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 this.manifest.splice(this.editedIndex, 1)
                 this.closeDelete()
                 this.$toast('მანიფესტი გაუქმებულია', {
@@ -531,7 +532,8 @@ export default {
 
             };
             axios(options)
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 if (this.editedIndex > -1) {
                     Object.assign(this.manifest[this.editedIndex], this.editedItem)
                 } else {
@@ -580,6 +582,7 @@ export default {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
+                console.log(response)
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();

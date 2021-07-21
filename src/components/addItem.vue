@@ -627,7 +627,8 @@ export default {
                 }, 
             };
             axios(options)
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 this.$toast.success('ამანათი დამატებულია', {
                     position: "bottom-left",
                     timeout: 5000,
@@ -683,7 +684,8 @@ export default {
             axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();

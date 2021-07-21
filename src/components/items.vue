@@ -800,7 +800,8 @@ export default {
                 data: {id: this.newSelected}
             };
             axios(options)
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 this.items.splice(this.editedIndex, 1)
                 this.closeDelete()
                 this.$toast.success('ამანათი გაუქმებულია', {
@@ -878,7 +879,8 @@ export default {
 
             };
             axios(options)
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 this.itemSearch()
                 this.close()
                 this.$toast.success('ამანათი შეცვლილია', {
@@ -925,7 +927,8 @@ export default {
             axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();
@@ -977,7 +980,8 @@ export default {
             };
             console.log(options.data)
             axios(options)
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 this.itemSearch()
                 this.changeManifest = false
                 this.$toast.success('მანიფესტი შეცვლილია', {
