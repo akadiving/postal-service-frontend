@@ -200,6 +200,21 @@ export default {
       }
       return item.value;
     },
+    logout() {
+      axios.post('https://apimyposta.online/api/logout/', {
+        refresh_token: sessionStorage.getItem('refresh')
+      })
+      .then((response) => {
+        console.log(response)
+        //localStorage.removeItem('access')
+        //localStorage.removeItem('refresh')
+        sessionStorage.clear();
+        this.loginPage()
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+    },
     getUser(){
       let accessToken = JSON.parse(sessionStorage.getItem('access'))
       const baseURL = `https://apimyposta.online/users/me/`;
