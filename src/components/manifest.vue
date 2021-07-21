@@ -325,7 +325,6 @@ export default {
             .then((response) => {
                 this.manifest = response.data.results
                 this.loadingManifest = false
-                console.log(response.data.results[0].items)
             })
             .catch((error) => {
                 console.log(error)
