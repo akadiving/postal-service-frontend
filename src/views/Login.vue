@@ -213,7 +213,6 @@ export default {
       };
       axios(options)
       .then((response) => {
-        console.log(response)
         sessionStorage.setItem('company_name', response.data.company_name)
         this.adminPage()
       })

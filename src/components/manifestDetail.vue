@@ -183,6 +183,20 @@
                     itemsPerPageOptions:[-1]
                 }"
         >
+            <template v-slot:top>
+                <v-toolbar flat>
+                    <v-btn  
+                    large 
+                    text
+                    class="ma-2">
+                        <v-icon large
+                        color="green"
+                        @click="exportExcell">
+                            mdi-microsoft-excel
+                        </v-icon>
+                    </v-btn>
+                </v-toolbar>
+            </template>
             <template v-slot:item.actions="{ item }">
                 <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
@@ -309,6 +323,7 @@ export default {
         manifest: {},
         loadingItems: true,
         dialogDelete: false,
+        barcodeDialog: false,
         errorM: '',
         selectItem: '',
         items: [],
@@ -346,7 +361,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.manifest = response.data
                 this.items = response.data.items
                 this.loadingItems = false
@@ -387,8 +401,7 @@ export default {
                 data: {manifest_number: null},
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 this.$toast.success('ამანათი ამოღებულია მანიფესტიდან', {
                     position: "bottom-left",
                     timeout: 5000,
@@ -448,7 +461,6 @@ export default {
             };
             await axios(options)
             .then((response) => {
-                console.log(response)
                 const blob = new Blob([response.data],{type: 'application/pdf'});
                 const objectUrl = URL.createObjectURL(blob);
                 this.pdfsrc = objectUrl;
@@ -483,8 +495,8 @@ export default {
             axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
-            .then((response) => {
-                console.log(response)
+            .then(() => {
+
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();
@@ -519,6 +531,59 @@ export default {
             this.dialogDelete = false
             this.newSelected = ''
         },
+        async exportExcell(){
+            // If there is any selected item takes id from array and appends it to a
+            // newSelected. If not, than this function will take an ID form Items array
+            // and will append it to a newSelected. After that, POST request with the list
+            // of IDs will be sent to return an excel file with specified IDs
+            this.barcodeDialog = true
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `https://apimyposta.online/manifest/export_excel_manifest/`;
+            let options = {
+                method: 'POST',
+                baseURL: baseURL,
+                timeout: 10000,
+                responseType: "blob",
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+                data: {
+                        manifest_id: this.manifest.id,
+                        total_items: this.manifest.total_items,
+                        total_weight: this.manifest.total_weight
+                        } 
+            };
+            await axios(options)
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
+                const link = document.createElement('a');
+                link.href = url;
+                let d = Date.now();
+                d = new Date(d);
+                d = (d.getMonth()+1)+'-'+d.getDate()+'-'+d.getFullYear()+'-'+(d.getHours() > 12 ? d.getHours() - 12 : d.getHours())+':'+d.getMinutes()+'-'+(d.getHours() >= 12 ? "PM" : "AM");
+                link.setAttribute('download', `მანიფესტი-${d}.xls`);
+                document.body.appendChild(link);
+                link.click();
+                this.barcodeDialog = false
+            })
+            .catch((error) => {
+                console.log(error)
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+            })
+        }
     },
     mounted(){
         this.getManifest()

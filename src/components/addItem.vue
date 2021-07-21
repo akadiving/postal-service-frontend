@@ -612,7 +612,6 @@ export default {
 
     methods: {
         addItem(){
-            console.log(this.newItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `https://apimyposta.online/items/add/`;
             if (this.newItem.description == null){
@@ -628,8 +627,7 @@ export default {
                 }, 
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 this.$toast.success('ამანათი დამატებულია', {
                     position: "bottom-left",
                     timeout: 5000,
@@ -685,8 +683,7 @@ export default {
             axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();
@@ -723,7 +720,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.manifestList = response.data.results
                 this.manifestList.unshift({manifest_code: "არცერთი", id: null})
             })

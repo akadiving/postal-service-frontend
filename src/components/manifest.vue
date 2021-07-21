@@ -323,7 +323,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.manifest = response.data.results
                 this.loadingManifest = false
                 console.log(response.data.results[0].items)
@@ -369,7 +368,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.manifest = response.data.results
                 this.totalManifests = response.data.count
                 this.nextPage = response.data.next
@@ -411,7 +409,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.manifest = response.data.results
                 this.totalManifests = response.data.count
                 this.nextPage = response.data.next
@@ -442,11 +439,9 @@ export default {
         },
         editItem (item) {
             this.editedIndex = this.manifest.indexOf(item)
-            console.log(this.editedItem)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
             this.selectEditItem = item.id
-            console.log(this.editedItem)
         },
         getManifestDetail(id){
             this.$emit('getManifestDetail', id)
@@ -469,8 +464,7 @@ export default {
                 }, 
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 this.manifest.splice(this.editedIndex, 1)
                 this.closeDelete()
                 this.$toast('მანიფესტი გაუქმებულია', {
@@ -524,7 +518,6 @@ export default {
         },
 
         save () {
-            console.log(this.editedItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `https://apimyposta.online/manifest/update/${this.selectEditItem}`;
             const options = {
@@ -538,8 +531,7 @@ export default {
 
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 if (this.editedIndex > -1) {
                     Object.assign(this.manifest[this.editedIndex], this.editedItem)
                 } else {
@@ -588,7 +580,6 @@ export default {
                 refresh_token: sessionStorage.getItem('refresh')
             })
             .then((response) => {
-                console.log(response)
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();

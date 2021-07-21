@@ -267,7 +267,6 @@ export default {
     },
     methods: {
         addManifest(){
-            console.log(this.newItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `https://apimyposta.online/manifest/add/`;
             const options = {
@@ -280,8 +279,7 @@ export default {
                 }, 
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 this.$toast.success('მანიფესტი დამატებულია', {
                     position: "bottom-left",
                     timeout: 5000,
@@ -339,8 +337,7 @@ export default {
             axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();

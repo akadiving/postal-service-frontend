@@ -169,7 +169,6 @@ export default {
         refresh_token: sessionStorage.getItem('refresh')
       })
       .then((response) => {
-        console.log(response)
         //localStorage.removeItem('access')
         //localStorage.removeItem('refresh')
         sessionStorage.clear();

@@ -47,9 +47,7 @@
                 }"
         >
             <template v-slot:top>
-                <v-toolbar
-                    flat
-                >
+                <v-toolbar flat>
                     <v-btn  
                     large 
                     text
@@ -613,8 +611,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                
-                console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
                 this.nextPage = response.data.next
@@ -662,7 +658,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
                 this.nextPage = response.data.next
@@ -703,7 +698,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
                 this.nextPage = response.data.next
@@ -737,7 +731,6 @@ export default {
             this.editedItem = Object.assign({}, item)
             this.dialog = true
             this.selectEditItem = item.id
-            console.log(this.editedItem)
         },
         deleteItem (item) {
             this.editedIndex = this.items.indexOf(item)
@@ -746,15 +739,12 @@ export default {
             this.selectItem = item.id
             this.newSelected = []
             this.selected.push(item)
-   
+
             this.selected.forEach(element => {
                 this.newSelected.push(element.id)
             });
 
             this.newSelected = [...new Set(this.newSelected)]
-            
-            console.log(this.newSelected)
-            
             this.selected = []
         },
         async showBarcode(item){
@@ -772,7 +762,6 @@ export default {
             };
             await axios(options)
             .then((response) => {
-                console.log(response)
                 const blob = new Blob([response.data],{type: 'application/pdf'});
                 const objectUrl = URL.createObjectURL(blob);
                 this.pdfsrc = objectUrl;
@@ -811,8 +800,7 @@ export default {
                 data: {id: this.newSelected}
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 this.items.splice(this.editedIndex, 1)
                 this.closeDelete()
                 this.$toast.success('ამანათი გაუქმებულია', {
@@ -875,7 +863,6 @@ export default {
             })
         },
         save () {
-            console.log(this.editedItem)
             delete this.editedItem['barcode_image']
             delete this.editedItem['manifest_code']
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
@@ -891,8 +878,7 @@ export default {
 
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 this.itemSearch()
                 this.close()
                 this.$toast.success('ამანათი შეცვლილია', {
@@ -939,8 +925,7 @@ export default {
             axios.post('https://apimyposta.online/api/logout/', {
                 refresh_token: sessionStorage.getItem('refresh')
             })
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 //localStorage.removeItem('access')
                 //localStorage.removeItem('refresh')
                 sessionStorage.clear();
@@ -976,8 +961,6 @@ export default {
 
             this.newSelected = [...new Set(this.newSelected)]
             
-            console.log(this.newSelected)
-            
             this.selected = []
         },
         changeManifestId(){
@@ -994,8 +977,7 @@ export default {
             };
             console.log(options.data)
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
                 this.itemSearch()
                 this.changeManifest = false
                 this.$toast.success('მანიფესტი შეცვლილია', {
@@ -1064,7 +1046,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.manifestList = response.data.results
                 this.manifestList.unshift({manifest_code: "არცერთი", id: null})
             })
@@ -1128,7 +1109,6 @@ export default {
                     this.newSelected.push(element.id)
                 });
                 this.newSelected = [...new Set(this.newSelected)]
-                console.log(this.newSelected)
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
@@ -1145,7 +1125,6 @@ export default {
                     this.newSelected.push(element.id)
                 });
                 this.newSelected = [...new Set(this.newSelected)]
-                console.log(this.newSelected)
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
@@ -1159,7 +1138,6 @@ export default {
             }
             await axios(options)
             .then((response) => {
-                console.log(response)
                 const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
                 const link = document.createElement('a');
                 link.href = url;
