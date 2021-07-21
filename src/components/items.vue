@@ -47,9 +47,7 @@
                 }"
         >
             <template v-slot:top>
-                <v-toolbar
-                    flat
-                >
+                <v-toolbar flat>
                     <v-btn  
                     large 
                     text
@@ -596,9 +594,9 @@ export default {
     },
     methods: {
         itemSearch(item){
-            let baseURL = `hhttp://127.0.0.1:8000/search/?search=${item}`;
+            let baseURL = `http://127.0.0.1:8000/search/?search=${item}`;
             if (!item){
-                baseURL = `hhttp://127.0.0.1:8000/items/search/?search=`
+                baseURL = `http://127.0.0.1:8000/items/search/?search=`
             } else {
                 baseURL = `http://127.0.0.1:8000/items/search/?search=${item}`;
             }
