@@ -142,7 +142,7 @@
                     </v-dialog>
                     <v-dialog v-model="dialogDelete" max-width="500px">
                     <v-card>
-                        <v-card-title class="text-h6">ნამდვილად გსურთ ამანათის გაუქმება?</v-card-title>
+                        <v-card-title class="text-h6">ნამდვილად გსურთ მანიფესტის გაუქმება?</v-card-title>
                         <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" outlined @click="closeDelete">არა</v-btn>
