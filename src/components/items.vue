@@ -745,7 +745,7 @@ export default {
             });
 
             this.newSelected = [...new Set(this.newSelected)]
-            this.selected = []
+            
         },
         async showBarcode(item){
             this.barcodeDialog = true
