@@ -303,6 +303,71 @@
                     </v-dialog>
                     <!-- delete dialog -->
 
+                    <!-- sign dialog -->
+                    <v-dialog v-model="dialogSignature" width="500px" height="200px" max-height="400px" max-width="500px" >
+                        <v-card flex v-if="signed" transition="scale-transition origin-center">
+                            <v-card-title class="text-h6">გთხოვთ ხელი მოაწეროთ</v-card-title>
+                            <v-card-text class='text-center'>
+                                <v-container fluid>
+                                    <v-row justify="center">   
+                                        <v-col cols="12" v-if="signedFinish">
+                                            <v-avatar
+                                            size="128"
+                                            >
+                                            <v-img src="../assets/success-svgrepo-com.svg"></v-img>
+                                            </v-avatar>
+
+                                        </v-col>
+                                        <v-col cols="12" v-else>
+                                            <v-progress-circular
+                                            :size="70"
+                                            :width="7"
+                                            color="green"
+                                            indeterminate
+                                            ></v-progress-circular>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red" outlined @click="clear" :disabled='true'>წაშლა</v-btn>
+                            <v-btn color="green" outlined @click="signItem()" :disabled='true'
+                            >დადასტურება</v-btn>
+                            <v-btn color="green" outlined @click="drawSignature" :disabled='true'>draw</v-btn>
+                            <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                        <v-card flex v-else transition="scale-transition origin-center">
+                            <v-card-title class="text-h6">გთხოვთ ხელი მოაწეროთ</v-card-title>
+                            <v-card-text class='text-center'>
+                                <v-container flex width="100%">
+                                    <v-row>
+                                        <v-col cols='12'>
+                                            <VueSignaturePad
+                                            id="signature"
+                                            width="100%"
+                                            height="200px"
+                                            ref="signaturePad"
+                                            :options="{onBegin: () => {$refs.signaturePad.resizeCanvas()}, 
+                                            onEnd: () => {$refs.signaturePad.clearCacheImages()}}"
+                                            />
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red" outlined @click="clear">წაშლა</v-btn>
+                            <v-btn color="green" outlined @click="signItem()"
+                            >დადასტურება</v-btn>
+                            <v-btn color="green" outlined @click="drawSignature">draw</v-btn>
+                            <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <!-- sign dialog -->
+
                     <!-- change manfiest dialog -->
                     <v-dialog v-model="changeManifest" max-width="500px">
                     <v-card>
@@ -375,11 +440,21 @@
             <template v-slot:item.add_manifest="{ item }">
             <v-icon
                 medium
-                class="ml-4"
+                class="ml-6"
                 @click="showSelected(item)"
                 color='green'
             >
                 mdi-book-plus-multiple-outline
+            </v-icon>
+            </template>
+            <template v-slot:item.add_signature="{ item }">
+            <v-icon
+                medium
+                
+                @click="addSignature(item)"
+                color='primary'
+            >
+                mdi-pen
             </v-icon>
             </template>
             <template v-slot:item.manifest_code="{ item }">
@@ -475,6 +550,8 @@ export default {
         errorM: '',
         selected: [],
         validManifest: false,
+        signed: false,
+        signedFinish: false,
         newSelected: [],
         manifestList: [],
         selectedManifest: '',
@@ -496,6 +573,7 @@ export default {
         selectEditItem: '',
         dialogDelete: false,
         dialog: false,
+        dialogSignature: false,
         barcodeDialog: false,
         changeManifest: false,
         headers: [
@@ -518,6 +596,7 @@ export default {
           { text: 'შეცვლა', value: 'actions', sortable: false },
           { text: 'სტიკერი', value: 'document', sortable: false },
           { text: 'მანიფესტში დამ.', value: 'add_manifest' },
+          { text: 'ხელმოწერა', value: 'add_signature' },
           { text: '', value: 'data-table-expand' },
           
         ],
@@ -567,6 +646,7 @@ export default {
             manifest_number: '',
         },
         
+        signature: {}
     }),
     watch: {
         search(value) {
@@ -590,7 +670,7 @@ export default {
           } else {
               return this.validManifest = false
           }
-      }
+      },
     },
     methods: {
         itemSearch(item){
@@ -610,8 +690,7 @@ export default {
                 },
             };
             axios(options)
-            .then((response) => {
-                
+            .then((response) => {             
                 console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
@@ -647,6 +726,7 @@ export default {
                 }); 
             })
         },
+        
         next(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `${this.nextPage}`;
@@ -795,6 +875,88 @@ export default {
                     rtl: false
                 });
             })
+        },
+        
+        clear() {
+            this.$refs.signaturePad.clearSignature();
+            this.$refs.signaturePad.clearCacheImages();
+        },
+        signItem() {
+            this.signed = true
+            this.signature = JSON.stringify(this.$refs.signaturePad.toData())
+            console.log(this.signature);
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `http://127.0.0.1:8000/items/signature/`;
+            const options = {
+                method: 'PATCH',
+                baseURL: baseURL,
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+                data: {id: this.newSelected,signature: this.signature} 
+            };
+            console.log(options.data)
+            axios(options)
+            .then((response) => {
+                console.log(response)
+                this.itemSearch()
+                this.signedFinish = true
+                
+                setTimeout(() => { 
+                    this.dialogSignature = false
+                    this.signed = false
+                    this.signedFinish = false
+                    this.newSelected = []
+                    this.signature = {}
+                }, 1500);
+                
+            })
+            .catch((error) => {
+                console.log(error)
+                if(error.response.data.detail == 'Given token not valid for any token type'){
+                    this.$toast.error('გთხოვთ თავიდან შეხვიდეთ მართვის პანელში', {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+                    this.logout()
+                }
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+                
+            })
+        },
+        addSignature(item){
+            this.dialogSignature = true
+            this.newSelected = `${item.id}`
+            this.signature = item.signature
+            this.drawSignature()
+
+        },
+        drawSignature(){
+            var draw = JSON.parse(this.signature)
+            this.$refs.signaturePad.fromData(draw)
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
@@ -1191,6 +1353,9 @@ export default {
         }
     },
     mounted(){
+        this.$nextTick(() => {
+            this.$refs.signaturePad.resizeCanvas();
+        })
         this.itemSearch()
     }
 }
@@ -1204,6 +1369,15 @@ export default {
 }
 
 .v-data-table .v-data-table__wrapper {
-        overflow: unset;
-    }
+    overflow: unset;
+}
+
+#signature {
+  border: double 3px transparent;
+  border-radius: 5px;
+  background-image: linear-gradient(white, white),
+    radial-gradient(circle at top left, #4bc5e8, #9f6274);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+}
 </style>

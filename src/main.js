@@ -1,4 +1,5 @@
 import Vue from "vue";
+import VueSignaturePad from 'vue-signature-pad';
 import App from "./App.vue";
 import "./registerServiceWorker";
 import router from "./router";
@@ -9,9 +10,10 @@ import "vue-toastification/dist/index.css";
 import vueCountryRegionSelect from 'vue-country-region-select'
 
 
+
 Vue.use(vueCountryRegionSelect)
 
-
+Vue.use(VueSignaturePad);
 const options = {
     transition: "Vue-Toastification__fade",
     maxToasts: 5,
