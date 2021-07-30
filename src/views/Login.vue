@@ -1,6 +1,7 @@
 <template>
   <v-container fill-height
     fluid>
+    
     <v-row justify='center' align="center">
       <v-col cols="12"
       xs="12"
@@ -81,7 +82,9 @@ import router from "../router/index";
 
 export default {
   name: "AdminLogin",
+  components: {
 
+  },
   data: () => ({
     alert: null,
     errorM: "",

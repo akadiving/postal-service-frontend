@@ -3,6 +3,9 @@
     <Header 
     v-bind:drawer='drawer'
     @menu='menu' />
+    <div v-if="!loading">
+      <Preloader />
+    </div>
     <v-navigation-drawer v-model="drawer" app >
       <v-sheet color="grey lighten-4" class="pa-4">
         <v-avatar class="mb-4" color="blue" size="64">
@@ -136,13 +139,13 @@ export default {
   name: "Admin",
   props: {},
   components: {
+    Preloader,
     Header,
     'Items': Items,
     'Manifest': Manifest,
     'AddItem': AddItem,
     'ManifestDetail': ManifestDetail,
     'AddManifest':AddManifest,
-    'Preloader': Preloader
   },
   data: () => ({
     adminName: '',
@@ -160,6 +163,7 @@ export default {
     loadTable: true,
     component: "",
     manifestID: '',
+    loading: false,
   }),
 
   methods: {
@@ -287,15 +291,15 @@ export default {
       this.manifest()
     },
     preload(){
-      this.component = 'Preloader';
       setTimeout(()=>{
-        this.component = '';
+        this.loading = true;
       }, 1000);
     },
     //get current user
     
   },
   mounted() {
+    this.preload()
     document.title = 'მართვის პანელი'
     this.adminName = sessionStorage.getItem('company_name')
     if(!sessionStorage.getItem('access')){

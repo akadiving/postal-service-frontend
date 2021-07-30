@@ -2,6 +2,7 @@
   <v-app>
     <v-main>
       <transition mode="out-in">
+        
         <router-view />
       </transition>
     </v-main>
@@ -13,11 +14,15 @@
 export default {
   name: "App",
   components: {
-
+    
   },
   data: () => ({
-    //
+    
   }),
+
+  methods: {
+    
+  }
 };
 </script>
 <style scoped>

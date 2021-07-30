@@ -276,6 +276,25 @@
                             </v-chip> 
                         </v-col>
                         <v-col cols='auto' class="ma-2 mt-3">
+                            გაცემულია - <v-chip
+                                v-if="!item.delivered"
+                                color='red'
+                                dark
+                                outlined
+                                
+                            >
+                                არა
+                            </v-chip>
+                            <v-chip
+                                v-else
+                                color='green'
+                                dark
+                                outlined
+                            >
+                                კი
+                            </v-chip> 
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
                             <v-textarea
                             outlined
                             readonly
@@ -304,7 +323,7 @@
         </v-card>
         </v-dialog>
         <!-- delete dialog -->
-
+        
         <!-- barcode manfiest dialog -->
         <v-dialog v-model="barcodeDialog" 
         persistent

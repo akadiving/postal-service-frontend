@@ -48,16 +48,31 @@
         >
             <template v-slot:top>
                 <v-toolbar flat>
-                    <v-btn  
-                    large 
-                    text
-                    class="ma-2">
-                        <v-icon large
-                        color="green"
-                        @click="exportExcell">
-                            mdi-microsoft-excel
-                        </v-icon>
-                    </v-btn>
+                    <v-container fluid>
+                        <v-row justify="start">
+                            <v-col cols="auto">
+                                <v-btn  
+                                large 
+                                text
+                                class="ma-2">
+                                    <v-icon large
+                                    color="green"
+                                    @click="exportExcell">
+                                        mdi-microsoft-excel
+                                    </v-icon>
+                                </v-btn>
+                            </v-col>
+                            <v-col cols="auto">
+                                <v-checkbox
+                                class="mt-4"
+                                v-model="received"
+                                label="გაცემულია"
+                                ></v-checkbox>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                   
+                    
                     <!-- edit dialog -->
                     <v-dialog
                     v-model="dialog"
@@ -244,6 +259,35 @@
                                     single-line
                                     ></v-select>
                                 </v-col>
+                                <v-col
+                                    cols="12"
+                                    sm="6"
+                                    md="4"
+                                >
+                                <v-select
+                                    v-model="editedItem.delivered"
+                                    :items="delivered"
+                                    label="გაცემულია"
+                                    hint='გაცემულია'
+                                    persistent-hint
+                                    single-line
+                                    ></v-select>
+                                </v-col>
+                                <v-col
+                                    cols="12"
+                                    sm="6"
+                                    md="4"
+                                >
+                                    <v-textarea
+                                    v-model="editedItem.description"
+                                    outlined
+                                    auto-grow
+                                    hide-details
+                                    rows="1"
+                                    label="აღწერა"
+                                    :value="items.description"
+                                    ></v-textarea>
+                                </v-col>
                                 </v-row>
                             </v-container>
                         </v-card-text>
@@ -303,7 +347,7 @@
                     </v-dialog>
                     <!-- delete dialog -->
 
-                    <!-- sign dialog -->
+                    <!-- signature dialog -->
                     <v-dialog v-model="dialogSignature" width="500px" height="200px" max-height="400px" max-width="500px" >
                         <v-card flex v-if="signed" transition="scale-transition origin-center">
                             <v-card-title class="text-h6">გთხოვთ ხელი მოაწეროთ</v-card-title>
@@ -366,7 +410,7 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <!-- sign dialog -->
+                    <!-- signature dialog -->
 
                     <!-- change manfiest dialog -->
                     <v-dialog v-model="changeManifest" max-width="500px">
@@ -510,6 +554,25 @@
                             </v-chip> 
                         </v-col>
                         <v-col cols='auto' class="ma-2 mt-3">
+                            გაცემულია - <v-chip
+                                v-if="!item.delivered"
+                                color='red'
+                                dark
+                                outlined
+                                
+                            >
+                                არა
+                            </v-chip>
+                            <v-chip
+                                v-else
+                                color='green'
+                                dark
+                                outlined
+                            >
+                                კი
+                            </v-chip> 
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
                             <v-textarea
                             outlined
                             readonly
@@ -547,6 +610,7 @@ export default {
         countries: countries,
         currency: currency,
         newManifest: '',
+        received: false,
         errorM: '',
         selected: [],
         validManifest: false,
@@ -560,6 +624,14 @@ export default {
         previousPage: '',
         page: 1,
         arrived: [{
+        text: "კი",
+            value: true
+        },
+        {
+            text: "არა",
+            value: false
+        }],
+        delivered: [{
         text: "კი",
             value: true
         },
@@ -596,7 +668,7 @@ export default {
           { text: 'შეცვლა', value: 'actions', sortable: false },
           { text: 'სტიკერი', value: 'document', sortable: false },
           { text: 'მანიფესტში დამ.', value: 'add_manifest' },
-          { text: 'ხელმოწერა', value: 'add_signature' },
+          { text: 'ხელის მოწერა', value: 'add_signature' },
           { text: '', value: 'data-table-expand' },
           
         ],
@@ -623,6 +695,7 @@ export default {
             currency: '',
             in_manifest: '',
             arrived: '',
+            delivered: '',
             manifest_number: '',
         },
         defaultItem: {
@@ -643,6 +716,7 @@ export default {
             currency: '',
             in_manifest: '',
             arrived: '',
+            delivered: '',
             manifest_number: '',
         },
         
@@ -658,7 +732,13 @@ export default {
         dialogDelete (val) {
             val || this.closeDelete()
         },
-
+        received(value){
+            if(value){
+                this.itemDeliveredSearch()
+            } else{
+                this.itemSearch(value)
+            }
+        }
     },
     computed: {
       formTitle () {
@@ -726,7 +806,54 @@ export default {
                 }); 
             })
         },
-        
+        itemDeliveredSearch(){
+            let baseURL = `http://127.0.0.1:8000/items/delivered/search/?search=`;
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            
+            const options = {
+                method: 'GET',
+                baseURL: baseURL,
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+            };
+            axios(options)
+            .then((response) => {             
+                console.log(response)
+                this.items = response.data.results
+                this.totalItems = response.data.count
+                this.nextPage = response.data.next
+                this.previousPage = response.data.previous
+                this.loadingItems = false
+            })
+            .catch((error) => {
+                console.log(error)
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                }); 
+            })
+        },
         next(){
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `${this.nextPage}`;
@@ -876,7 +1003,6 @@ export default {
                 });
             })
         },
-        
         clear() {
             this.$refs.signaturePad.clearSignature();
             this.$refs.signaturePad.clearCacheImages();
