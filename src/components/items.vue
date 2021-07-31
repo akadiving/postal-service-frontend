@@ -814,7 +814,6 @@ export default {
             };
             axios(options)
             .then((response) => {             
-                console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
                 this.nextPage = response.data.next
@@ -861,7 +860,6 @@ export default {
             };
             axios(options)
             .then((response) => {  
-                console.log(response)   
                 for (let i = 0; i < response.data.results.length; i++){
                     this.items.push(response.data.results[i])
                 }
@@ -911,7 +909,6 @@ export default {
             };
             axios(options)
             .then((response) => {  
-                console.log(response)
                 this.items = response.data
                 this.loadingItems = false
             })
@@ -1424,7 +1421,21 @@ export default {
                     },
                     data: {id: this.newSelected} 
                 };
-            } else {
+            } 
+            else if(this.selected.length <= 0){
+                this.newSelected = []
+                options = {
+                    method: 'POST',
+                    baseURL: baseURL,
+                    timeout: 10000,
+                    responseType: "blob",
+                    headers: {
+                        Authorization: 'Bearer ' + accessToken.value
+                    },
+                    data: {id: this.newSelected} 
+                };
+            }
+            else {
                 this.newSelected = []
                 this.items.forEach(element => {
                     this.newSelected.push(element.id)
