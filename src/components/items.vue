@@ -714,7 +714,7 @@ export default {
             delivered: '',
             manifest_number: '',
         },
-        currentUrl: 'http://127.0.0.1:8000/items/search/?search=',
+        currentUrl: 'https://apimyposta.online/items/search/?search=',
         signature: {}
     }),
     watch: {
@@ -750,7 +750,7 @@ export default {
     methods: {
         itemSearch(item){
             this.loadingItems = true
-            let baseURL = `https://apimyposta.onlineitems/search/?search=${item}`;
+            let baseURL = `https://apimyposta.online/items/search/?search=${item}`;
             if (!item){
                 baseURL = `https://apimyposta.online/items/search/?search=`
             } else {
@@ -801,28 +801,38 @@ export default {
                 }); 
             })
         },
-        next(){
+        itemDeliveredSearch(){
+            let baseURL = `https://apimyposta.online/items/delivered/search/?search=`;
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.nextPage}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
-                }, 
+                },
             };
             axios(options)
-            .then((response) => {
+            .then((response) => {             
+                console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
                 this.nextPage = response.data.next
-                this.previousPage = response.data.previous
                 this.loadingItems = false
             })
             .catch((error) => {
                 console.log(error)
-                this.$toast.error(error.response.data.detail, {
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
                     position: "bottom-left",
                     timeout: 5000,
                     closeOnClick: true,
@@ -835,33 +845,157 @@ export default {
                     closeButton: "button",
                     icon: true,
                     rtl: false
-                });
-                if(error.response.data.detail == 'Given token not valid for any token type'){
-                    this.logout()
-                }
+                }); 
             })
         },
-        previous(){
+        next(){
+            let baseURL = this.currentUrl;
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.previousPage}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
-                }, 
+                },
             };
             axios(options)
-            .then((response) => {
-                this.items = response.data.results
+            .then((response) => {  
+                console.log(response)   
+                for (let i = 0; i < response.data.results.length; i++){
+                    this.items.push(response.data.results[i])
+                }
+                this.currentUrl = response.data.next
                 this.totalItems = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
                 this.loadingItems = false
             })
             .catch((error) => {
                 console.log(error)
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                }); 
+            })
+        },
+        allItems(){
+            this.loadingItems = true
+            let baseURL = 'https://apimyposta.online/items/';
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            
+            const options = {
+                method: 'GET',
+                baseURL: baseURL,
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+            };
+            axios(options)
+            .then((response) => {  
+                console.log(response)
+                this.items = response.data
+                this.loadingItems = false
+            })
+            .catch((error) => {
+                console.log(error)
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                }); 
+            })
+        },
+        clear() {
+            this.$refs.signaturePad.clearSignature();
+            this.$refs.signaturePad.clearCacheImages();
+        },
+        signItem() {
+            this.signed = true
+            this.signature = JSON.stringify(this.$refs.signaturePad.toData())
+            console.log(this.signature);
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `https://apimyposta.online/items/signature/`;
+            const options = {
+                method: 'PATCH',
+                baseURL: baseURL,
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+                data: {id: this.newSelected,signature: this.signature} 
+            };
+            console.log(options.data)
+            axios(options)
+            .then((response) => {
+                console.log(response)
+                this.itemSearch()
+                this.signedFinish = true
+                
+                setTimeout(() => { 
+                    this.dialogSignature = false
+                    this.signed = false
+                    this.signedFinish = false
+                    this.newSelected = []
+                    this.signature = {}
+                }, 1500);
+                
+            })
+            .catch((error) => {
+                console.log(error)
+                if(error.response.data.detail == 'Given token not valid for any token type'){
+                    this.$toast.error('გთხოვთ თავიდან შეხვიდეთ მართვის პანელში', {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+                    this.logout()
+                }
                 this.$toast.error(error.response.data.detail, {
                     position: "bottom-left",
                     timeout: 5000,
@@ -876,10 +1010,21 @@ export default {
                     icon: true,
                     rtl: false
                 });
-                if(error.response.data.detail == 'Given token not valid for any token type'){
-                    this.logout()
-                }
+                
             })
+        },
+        addSignature(item){
+            this.dialogSignature = true
+            this.newSelected = `${item.id}`
+            this.signature = item.signature
+            this.drawSignature()
+
+        },
+        drawSignature(){
+            const data = this.$refs.signaturePad.saveSignature().data
+            console.log(data)
+            //var draw = JSON.parse(this.signature)
+            //this.$refs.signaturePad.fromData(draw)
         },
         editItem (item) {
             this.editedIndex = this.items.indexOf(item)

@@ -7,6 +7,9 @@ import vuetify from "./plugins/vuetify";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import vueCountryRegionSelect from 'vue-country-region-select'
+import VueSignaturePad from 'vue-signature-pad';
+
+Vue.use(VueSignaturePad);
 
 
 Vue.use(vueCountryRegionSelect)
