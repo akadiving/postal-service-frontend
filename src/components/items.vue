@@ -586,15 +586,13 @@
                     </v-row>
                 </td>
             </template> 
-                 
         </v-data-table>
-        <v-pagination
-            v-model="page"
-            :length="(totalItems)/20"
-            circle
-            @next="next"
-            @previous='previous'
-        ></v-pagination> 
+        <v-btn text color="primary" @click="next">
+            მეტი...
+        </v-btn>
+        <v-btn text color="primary" @click="allItems">
+            ყველა ამანათი
+        </v-btn>
         </div>
   </v-card>
 </template>
@@ -620,9 +618,6 @@ export default {
         manifestList: [],
         selectedManifest: '',
         search: '',
-        nextPage: '',
-        previousPage: '',
-        page: 1,
         arrived: [{
         text: "კი",
             value: true
@@ -719,7 +714,7 @@ export default {
             delivered: '',
             manifest_number: '',
         },
-        
+        currentUrl: 'http://127.0.0.1:8000/items/search/?search=',
         signature: {}
     }),
     watch: {
@@ -754,6 +749,7 @@ export default {
     },
     methods: {
         itemSearch(item){
+            this.loadingItems = true
             let baseURL = `http://127.0.0.1:8000/search/?search=${item}`;
             if (!item){
                 baseURL = `http://127.0.0.1:8000/items/search/?search=`
@@ -770,12 +766,11 @@ export default {
                 },
             };
             axios(options)
-            .then((response) => {             
+            .then((response) => {  
                 console.log(response)
                 this.items = response.data.results
+                this.currentUrl = response.data.next
                 this.totalItems = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
                 this.loadingItems = false
             })
             .catch((error) => {
@@ -855,28 +850,39 @@ export default {
             })
         },
         next(){
+            let baseURL = this.currentUrl;
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.nextPage}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
-                }, 
+                },
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
-                this.items = response.data.results
+            .then((response) => {  
+                console.log(response)   
+                for (let i = 0; i < response.data.results.length; i++){
+                    this.items.push(response.data.results[i])
+                }
+                this.currentUrl = response.data.next
                 this.totalItems = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
                 this.loadingItems = false
             })
             .catch((error) => {
                 console.log(error)
-                this.$toast.error(error.response.data.detail, {
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
                     position: "bottom-left",
                     timeout: 5000,
                     closeOnClick: true,
@@ -889,35 +895,40 @@ export default {
                     closeButton: "button",
                     icon: true,
                     rtl: false
-                });
-                if(error.response.data.detail == 'Given token not valid for any token type'){
-                    this.logout()
-                }
+                }); 
             })
         },
-        previous(){
+        allItems(){
+            this.loadingItems = true
+            let baseURL = 'http://127.0.0.1:8000/items/';
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.previousPage}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
-                }, 
+                },
             };
             axios(options)
-            .then((response) => {
+            .then((response) => {  
                 console.log(response)
-                this.items = response.data.results
-                this.totalItems = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
+                this.items = response.data
                 this.loadingItems = false
             })
             .catch((error) => {
                 console.log(error)
-                this.$toast.error(error.response.data.detail, {
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
                     position: "bottom-left",
                     timeout: 5000,
                     closeOnClick: true,
@@ -930,10 +941,7 @@ export default {
                     closeButton: "button",
                     icon: true,
                     rtl: false
-                });
-                if(error.response.data.detail == 'Given token not valid for any token type'){
-                    this.logout()
-                }
+                }); 
             })
         },
         editItem (item) {
@@ -1081,8 +1089,11 @@ export default {
 
         },
         drawSignature(){
-            var draw = JSON.parse(this.signature)
-            this.$refs.signaturePad.fromData(draw)
+            const data = this.$refs.signaturePad.saveSignature().data
+            data.slice(0, 22)
+            console.log(data)
+            //var draw = JSON.parse(this.signature)
+            //this.$refs.signaturePad.fromData(draw)
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
@@ -1425,7 +1436,22 @@ export default {
                     },
                     data: {id: this.newSelected} 
                 };
-            } else {
+            }
+            else if(this.selected.length <= 0){
+                this.newSelected = []
+                console.log(this.newSelected)
+                options = {
+                    method: 'POST',
+                    baseURL: baseURL,
+                    timeout: 10000,
+                    responseType: "blob",
+                    headers: {
+                        Authorization: 'Bearer ' + accessToken.value
+                    },
+                    data: {id: this.newSelected} 
+                };
+            }
+            else {
                 this.newSelected = []
                 this.items.forEach(element => {
                     this.newSelected.push(element.id)
@@ -1479,9 +1505,6 @@ export default {
         }
     },
     mounted(){
-        this.$nextTick(() => {
-            this.$refs.signaturePad.resizeCanvas();
-        })
         this.itemSearch()
     }
 }
