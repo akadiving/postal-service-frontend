@@ -3,6 +3,9 @@
     <Header 
     v-bind:drawer='drawer'
     @menu='menu' />
+    <div v-if="!loading">
+      <Preloader />
+    </div>
     <v-navigation-drawer v-model="drawer" app >
       <v-sheet color="grey lighten-4" class="pa-4">
         <v-avatar class="mb-4" color="blue" size="64">
@@ -63,7 +66,7 @@
             >
               <v-img src="../assets/package-box-svgrepo-com.svg"></v-img>
             </v-avatar>
-            <v-card-text>
+            <v-card-text class="pb-3">
               <v-row align="center">
                 <v-col class="text-h6 text--primary"
                 cols="12">
@@ -89,7 +92,7 @@
             >
               <v-img src="../assets/list-svgrepo-com.svg"></v-img>
             </v-avatar>
-            <v-card-text>
+            <v-card-text class="pb-3">
               <v-row align="center">
                 <v-col class="text-h6 text--primary"
                 cols="12">
@@ -136,13 +139,13 @@ export default {
   name: "Admin",
   props: {},
   components: {
+    Preloader,
     Header,
     'Items': Items,
     'Manifest': Manifest,
     'AddItem': AddItem,
     'ManifestDetail': ManifestDetail,
     'AddManifest':AddManifest,
-    'Preloader': Preloader
   },
   data: () => ({
     adminName: '',
@@ -160,6 +163,7 @@ export default {
     loadTable: true,
     component: "",
     manifestID: '',
+    loading: false,
   }),
 
   methods: {
@@ -209,6 +213,20 @@ export default {
         return null;
       }
       return item.value;
+    },
+    loginPage() {
+      router.push({ path: "/login" }).catch((err) => {
+        // Ignore the vuex err regarding  navigating to the page they are already on.
+        if (
+          err.name !== "NavigationDuplicated" &&
+          !err.message.includes(
+            "Avoided redundant navigation to current location"
+          )
+        ) {
+          // But print any other errors to the console
+          console.log(err);
+        }
+      });
     },
     manifestListPage() {
       router.push({ path: "/manifest" }).catch((err) => {
@@ -273,32 +291,19 @@ export default {
       this.manifest()
     },
     preload(){
-      this.component = 'Preloader';
       setTimeout(()=>{
-        this.component = '';
+        this.loading = true;
       }, 1000);
     },
-    loginPage() {
-      router.push({ path: "/login" }).catch((err) => {
-        // Ignore the vuex err regarding  navigating to the page they are already on.
-        if (
-          err.name !== "NavigationDuplicated" &&
-          !err.message.includes(
-            "Avoided redundant navigation to current location"
-          )
-        ) {
-          // But print any other errors to the console
-          console.log(err);
-        }
-      });
-    },
+    //get current user
     
   },
   mounted() {
+    this.preload()
     document.title = 'მართვის პანელი'
     this.adminName = sessionStorage.getItem('company_name')
-    if(!this.getWithExpire('access')){
-      this.logout()
+    if(!sessionStorage.getItem('access')){
+      this.loginPage()
     }
   },
 };
