@@ -169,7 +169,7 @@ export default {
   methods: {
     //logs out by removing admin key from local storage
     logout() {
-      axios.post('https://myposta.online/api/logout/', {
+      axios.post('https://apimyposta.online/api/logout/', {
         refresh_token: sessionStorage.getItem('refresh')
       })
       .then((response) => {
