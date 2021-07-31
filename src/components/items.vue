@@ -48,16 +48,31 @@
         >
             <template v-slot:top>
                 <v-toolbar flat>
-                    <v-btn  
-                    large 
-                    text
-                    class="ma-2">
-                        <v-icon large
-                        color="green"
-                        @click="exportExcell">
-                            mdi-microsoft-excel
-                        </v-icon>
-                    </v-btn>
+                    <v-container fluid>
+                        <v-row justify="start">
+                            <v-col cols="auto">
+                                <v-btn  
+                                large 
+                                text
+                                class="ma-2">
+                                    <v-icon large
+                                    color="green"
+                                    @click="exportExcell">
+                                        mdi-microsoft-excel
+                                    </v-icon>
+                                </v-btn>
+                            </v-col>
+                            <v-col cols="auto">
+                                <v-checkbox
+                                class="mt-4"
+                                v-model="received"
+                                label="გაცემულია"
+                                ></v-checkbox>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                   
+                    
                     <!-- edit dialog -->
                     <v-dialog
                     v-model="dialog"
@@ -244,6 +259,35 @@
                                     single-line
                                     ></v-select>
                                 </v-col>
+                                <v-col
+                                    cols="12"
+                                    sm="6"
+                                    md="4"
+                                >
+                                <v-select
+                                    v-model="editedItem.delivered"
+                                    :items="delivered"
+                                    label="გაცემულია"
+                                    hint='გაცემულია'
+                                    persistent-hint
+                                    single-line
+                                    ></v-select>
+                                </v-col>
+                                <v-col
+                                    cols="12"
+                                    sm="6"
+                                    md="4"
+                                >
+                                    <v-textarea
+                                    v-model="editedItem.description"
+                                    outlined
+                                    auto-grow
+                                    hide-details
+                                    rows="1"
+                                    label="აღწერა"
+                                    :value="items.description"
+                                    ></v-textarea>
+                                </v-col>
                                 </v-row>
                             </v-container>
                         </v-card-text>
@@ -302,6 +346,71 @@
                     </v-card>
                     </v-dialog>
                     <!-- delete dialog -->
+
+                    <!-- signature dialog -->
+                    <v-dialog v-model="dialogSignature" width="500px" height="200px" max-height="400px" max-width="500px" >
+                        <v-card flex v-if="signed" transition="scale-transition origin-center">
+                            <v-card-title class="text-h6">გთხოვთ ხელი მოაწეროთ</v-card-title>
+                            <v-card-text class='text-center'>
+                                <v-container fluid>
+                                    <v-row justify="center">   
+                                        <v-col cols="12" v-if="signedFinish">
+                                            <v-avatar
+                                            size="128"
+                                            >
+                                            <v-img src="../assets/success-svgrepo-com.svg"></v-img>
+                                            </v-avatar>
+
+                                        </v-col>
+                                        <v-col cols="12" v-else>
+                                            <v-progress-circular
+                                            :size="70"
+                                            :width="7"
+                                            color="green"
+                                            indeterminate
+                                            ></v-progress-circular>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red" outlined @click="clear" :disabled='true'>წაშლა</v-btn>
+                            <v-btn color="green" outlined @click="signItem()" :disabled='true'
+                            >დადასტურება</v-btn>
+                            <v-btn color="green" outlined @click="drawSignature" :disabled='true'>draw</v-btn>
+                            <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                        <v-card flex v-else transition="scale-transition origin-center">
+                            <v-card-title class="text-h6">გთხოვთ ხელი მოაწეროთ</v-card-title>
+                            <v-card-text class='text-center'>
+                                <v-container flex width="100%">
+                                    <v-row>
+                                        <v-col cols='12'>
+                                            <VueSignaturePad
+                                            id="signature"
+                                            width="100%"
+                                            height="200px"
+                                            ref="signaturePad"
+                                            :options="{onBegin: () => {$refs.signaturePad.resizeCanvas()}, 
+                                            onEnd: () => {$refs.signaturePad.clearCacheImages()}}"
+                                            />
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red" outlined @click="clear">წაშლა</v-btn>
+                            <v-btn color="green" outlined @click="signItem()"
+                            >დადასტურება</v-btn>
+                            <v-btn color="green" outlined @click="drawSignature">draw</v-btn>
+                            <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <!-- signature dialog -->
 
                     <!-- change manfiest dialog -->
                     <v-dialog v-model="changeManifest" max-width="500px">
@@ -375,11 +484,21 @@
             <template v-slot:item.add_manifest="{ item }">
             <v-icon
                 medium
-                class="ml-4"
+                class="ml-6"
                 @click="showSelected(item)"
                 color='green'
             >
                 mdi-book-plus-multiple-outline
+            </v-icon>
+            </template>
+            <template v-slot:item.add_signature="{ item }">
+            <v-icon
+                medium
+                
+                @click="addSignature(item)"
+                color='primary'
+            >
+                mdi-pen
             </v-icon>
             </template>
             <template v-slot:item.manifest_code="{ item }">
@@ -435,6 +554,25 @@
                             </v-chip> 
                         </v-col>
                         <v-col cols='auto' class="ma-2 mt-3">
+                            გაცემულია - <v-chip
+                                v-if="!item.delivered"
+                                color='red'
+                                dark
+                                outlined
+                                
+                            >
+                                არა
+                            </v-chip>
+                            <v-chip
+                                v-else
+                                color='green'
+                                dark
+                                outlined
+                            >
+                                კი
+                            </v-chip> 
+                        </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
                             <v-textarea
                             outlined
                             readonly
@@ -448,15 +586,13 @@
                     </v-row>
                 </td>
             </template> 
-                 
         </v-data-table>
-        <v-pagination
-            v-model="page"
-            :length="(totalItems)/20"
-            circle
-            @next="next"
-            @previous='previous'
-        ></v-pagination> 
+        <v-btn text color="primary" @click="next">
+            მეტი...
+        </v-btn>
+        <v-btn text color="primary" @click="allItems">
+            ყველა ამანათი
+        </v-btn>
         </div>
   </v-card>
 </template>
@@ -472,17 +608,25 @@ export default {
         countries: countries,
         currency: currency,
         newManifest: '',
+        received: false,
         errorM: '',
         selected: [],
         validManifest: false,
+        signed: false,
+        signedFinish: false,
         newSelected: [],
         manifestList: [],
         selectedManifest: '',
         search: '',
-        nextPage: '',
-        previousPage: '',
-        page: 1,
         arrived: [{
+        text: "კი",
+            value: true
+        },
+        {
+            text: "არა",
+            value: false
+        }],
+        delivered: [{
         text: "კი",
             value: true
         },
@@ -496,6 +640,7 @@ export default {
         selectEditItem: '',
         dialogDelete: false,
         dialog: false,
+        dialogSignature: false,
         barcodeDialog: false,
         changeManifest: false,
         headers: [
@@ -518,6 +663,7 @@ export default {
           { text: 'შეცვლა', value: 'actions', sortable: false },
           { text: 'სტიკერი', value: 'document', sortable: false },
           { text: 'მანიფესტში დამ.', value: 'add_manifest' },
+          { text: 'ხელის მოწერა', value: 'add_signature' },
           { text: '', value: 'data-table-expand' },
           
         ],
@@ -544,6 +690,7 @@ export default {
             currency: '',
             in_manifest: '',
             arrived: '',
+            delivered: '',
             manifest_number: '',
         },
         defaultItem: {
@@ -564,9 +711,11 @@ export default {
             currency: '',
             in_manifest: '',
             arrived: '',
+            delivered: '',
             manifest_number: '',
         },
-        
+        currentUrl: 'http://127.0.0.1:8000/items/search/?search=',
+        signature: {}
     }),
     watch: {
         search(value) {
@@ -578,7 +727,13 @@ export default {
         dialogDelete (val) {
             val || this.closeDelete()
         },
-
+        received(value){
+            if(value){
+                this.itemDeliveredSearch()
+            } else{
+                this.itemSearch(value)
+            }
+        }
     },
     computed: {
       formTitle () {
@@ -590,10 +745,11 @@ export default {
           } else {
               return this.validManifest = false
           }
-      }
+      },
     },
     methods: {
         itemSearch(item){
+            this.loadingItems = true
             let baseURL = `https://apimyposta.onlineitems/search/?search=${item}`;
             if (!item){
                 baseURL = `https://apimyposta.online/items/search/?search=`
