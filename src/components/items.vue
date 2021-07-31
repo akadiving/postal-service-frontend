@@ -378,7 +378,6 @@
                             <v-btn color="red" outlined @click="clear" :disabled='true'>წაშლა</v-btn>
                             <v-btn color="green" outlined @click="signItem()" :disabled='true'
                             >დადასტურება</v-btn>
-                            <v-btn color="green" outlined @click="drawSignature" :disabled='true'>draw</v-btn>
                             <v-spacer></v-spacer>
                             </v-card-actions>
                         </v-card>
@@ -950,8 +949,8 @@ export default {
         },
         signItem() {
             this.signed = true
-            this.signature = JSON.stringify(this.$refs.signaturePad.toData())
-            console.log(this.signature);
+            const data = this.$refs.signaturePad.saveSignature().data
+            this.signature = data
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `http://127.0.0.1:8000/items/signature/`;
             const options = {
@@ -1020,13 +1019,6 @@ export default {
             this.signature = item.signature
             this.drawSignature()
 
-        },
-        drawSignature(){
-            const data = this.$refs.signaturePad.saveSignature().data
-            data.slice(0, 22)
-            console.log(data)
-            //var draw = JSON.parse(this.signature)
-            //this.$refs.signaturePad.fromData(draw)
         },
         editItem (item) {
             this.editedIndex = this.items.indexOf(item)
