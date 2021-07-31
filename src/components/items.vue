@@ -944,73 +944,6 @@ export default {
                 }); 
             })
         },
-        editItem (item) {
-            this.editedIndex = this.items.indexOf(item)
-            console.log(this.editedItem)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
-            this.selectEditItem = item.id
-            console.log(this.editedItem)
-        },
-        deleteItem (item) {
-            this.editedIndex = this.items.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialogDelete = true
-            this.selectItem = item.id
-            this.newSelected = []
-            this.selected.push(item)
-   
-            this.selected.forEach(element => {
-                this.newSelected.push(element.id)
-            });
-
-            this.newSelected = [...new Set(this.newSelected)]
-            
-            console.log(this.newSelected)
-            
-            this.selected = []
-        },
-        async showBarcode(item){
-            this.barcodeDialog = true
-            let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `http://127.0.0.1:8000/items/generate_sticker/${item}`;
-            const options = {
-                method: 'GET',
-                baseURL: baseURL,
-                timeout: 10000,
-                responseType: "blob",
-                headers: {
-                    Authorization: 'Bearer ' + accessToken.value
-                }, 
-            };
-            await axios(options)
-            .then((response) => {
-                console.log(response)
-                const blob = new Blob([response.data],{type: 'application/pdf'});
-                const objectUrl = URL.createObjectURL(blob);
-                this.pdfsrc = objectUrl;
-                let tab = window.open();
-                tab.location.href = objectUrl;
-                this.barcodeDialog = false
-            })
-            .catch((error) => {
-                console.log(error)
-                this.$toast.error(error.response.data.detail, {
-                    position: "bottom-left",
-                    timeout: 5000,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: false,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false
-                });
-            })
-        },
         clear() {
             this.$refs.signaturePad.clearSignature();
             this.$refs.signaturePad.clearCacheImages();
@@ -1094,6 +1027,73 @@ export default {
             console.log(data)
             //var draw = JSON.parse(this.signature)
             //this.$refs.signaturePad.fromData(draw)
+        },
+        editItem (item) {
+            this.editedIndex = this.items.indexOf(item)
+            console.log(this.editedItem)
+            this.editedItem = Object.assign({}, item)
+            this.dialog = true
+            this.selectEditItem = item.id
+            console.log(this.editedItem)
+        },
+        deleteItem (item) {
+            this.editedIndex = this.items.indexOf(item)
+            this.editedItem = Object.assign({}, item)
+            this.dialogDelete = true
+            this.selectItem = item.id
+            this.newSelected = []
+            this.selected.push(item)
+   
+            this.selected.forEach(element => {
+                this.newSelected.push(element.id)
+            });
+
+            this.newSelected = [...new Set(this.newSelected)]
+            
+            console.log(this.newSelected)
+            
+            this.selected = []
+        },
+        async showBarcode(item){
+            this.barcodeDialog = true
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `http://127.0.0.1:8000/items/generate_sticker/${item}`;
+            const options = {
+                method: 'GET',
+                baseURL: baseURL,
+                timeout: 10000,
+                responseType: "blob",
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                }, 
+            };
+            await axios(options)
+            .then((response) => {
+                console.log(response)
+                const blob = new Blob([response.data],{type: 'application/pdf'});
+                const objectUrl = URL.createObjectURL(blob);
+                this.pdfsrc = objectUrl;
+                let tab = window.open();
+                tab.location.href = objectUrl;
+                this.barcodeDialog = false
+            })
+            .catch((error) => {
+                console.log(error)
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+            })
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
