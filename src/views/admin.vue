@@ -245,36 +245,26 @@ export default {
     items() {
       if (this.component !== "Items") {
         this.component = "Items";
-      } else {
-        this.component = "";
       }
     },
     manifest() {
       if (this.component !== "Manifest") {
         this.component = "Manifest";
-      } else {
-        this.component = "";
       }
     },
     addItem() {
       if (this.component !== "AddItem") {
         this.component = "AddItem";
-      } else {
-        this.component = "";
       }
     },
     addManifest() {
       if (this.component !== "AddManifest") {
         this.component = "AddManifest";
-      } else {
-        this.component = "";
       }
     },
     ManifestDetail() {
       if (this.component !== "ManifestDetail") {
         this.component = "ManifestDetail";
-      } else {
-        this.component = "";
       }
     },
     getManifestDetail(id){
@@ -285,7 +275,13 @@ export default {
       this.drawer = !this.drawer
     },
     close(){
-      this.component = '';
+      if(!this.component){
+        this.loading = false
+        this.component = '';
+        this.preload()
+      } else {
+        this.component = '';
+      }
     },
     closeManifestDetail(){
       this.manifest()
@@ -295,7 +291,7 @@ export default {
         this.loading = true;
       }, 1000);
     },
-    //get current user
+    
     
   },
   mounted() {

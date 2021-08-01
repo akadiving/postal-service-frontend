@@ -216,6 +216,7 @@ export default {
         console.log(error)
       })
     },
+    //get current user
     getUser(){
       let accessToken = JSON.parse(sessionStorage.getItem('access'))
       const baseURL = `https://apimyposta.online/users/me/`;
