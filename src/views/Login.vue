@@ -30,6 +30,7 @@
                 <v-text-field
                   v-model="email"
                   :rules="emailRules"
+                  id="email"
                   placeholder="ელ.ფოსტის მისამართი"
                   name="email"
                   prepend-inner-icon="mdi-account"
@@ -251,10 +252,14 @@ export default {
           this.logout()
         }
       })
+    },
+    focusEmail(){
+      document.getElementById('email').focus()
     }
   },
   mounted() {
     document.title = 'შესვლა'
+    this.focusEmail()
     if(sessionStorage.getItem('access')){
       this.adminPage()
     }
