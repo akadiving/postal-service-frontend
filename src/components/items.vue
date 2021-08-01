@@ -592,6 +592,21 @@
             ყველა ამანათი
         </v-btn>
         </div>
+        <v-fab-transition>
+           <v-btn
+           v-scroll="onScroll"
+           v-show="fab"
+           fab
+           dark
+           fixed
+           bottom
+           right
+           color="primary"
+           @click="toTop"
+           >
+               <v-icon>mdi-chevron-up</v-icon>
+           </v-btn>
+       </v-fab-transition>
   </v-card>
 </template>
 
@@ -712,8 +727,9 @@ export default {
             delivered: '',
             manifest_number: '',
         },
-        currentUrl: 'https://apimyposta.online/items/search/?search=',
-        signature: {}
+        currentUrl: '',
+        signature: {},
+        fab: false,
     }),
     watch: {
         search(value) {
@@ -767,8 +783,7 @@ export default {
             .then((response) => {
                 this.items = response.data.results
                 this.totalItems = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
+                this.currentUrl = response.data.next
                 this.loadingItems = false
             })
             .catch((error) => {
@@ -814,7 +829,6 @@ export default {
             .then((response) => {             
                 this.items = response.data.results
                 this.totalItems = response.data.count
-                this.nextPage = response.data.next
                 this.loadingItems = false
             })
             .catch((error) => {
@@ -846,6 +860,7 @@ export default {
             })
         },
         next(){
+            this.loadingItems = true
             let baseURL = this.currentUrl;
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             
@@ -1475,7 +1490,16 @@ export default {
                     rtl: false
                 });
             })
-        }
+        },
+        onScroll (e) {
+           if (typeof window === 'undefined') return
+               const top = window.pageYOffset ||   e.target.scrollTop || 0
+               this.fab = top > 20
+           },
+        toTop () {
+           this.$vuetify.goTo(0)
+       },
+
     },
     mounted(){
         this.itemSearch()

@@ -1,219 +1,241 @@
 <template>
     <v-card height='100%'>
-        <v-app-bar
-            flat
-            color="rgba(0, 0, 0, 0)"
-          >
-            <v-toolbar-title class="text-h6 text--primary">
-              მანიფესტები
-            </v-toolbar-title>
-            
-            <v-spacer></v-spacer>
-
-            <v-avatar>
-                <v-icon x-large @click='closeManifest'>mdi-close</v-icon>
-            </v-avatar>
-        </v-app-bar>
-        <v-card-title style="{position: sticky; overflow: auto;}">
-            <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="მანიფესტის მოძებნა"
-            single-line
-            hide-details
-            clearable
-            ></v-text-field>
-        </v-card-title>
-        <v-data-table
-            :headers="headers"
-            :items="manifest"
-            class="elevation-0 overflow-y-auto mx-auto"
-            fixed-header
-            no-data-text='მონაცემები არ არსებობს'
-            no-results-text='მონაცემები ვერ მოიძებნა'
-            :search="search"
-            multi-sort
-            hide-default-footer
-            :loading='loadingManifest'
-            loading-text="მონაცემები იტვირთება"
-            height="625px"
-            :footer-props="{
-                    itemsPerPageOptions:[-1]
-                }"
-        >
-            <template v-slot:top>
-                <v-toolbar
-                    flat
-                >
-                    <v-dialog
-                    v-model="dialog"
-                    max-width="500px"
-                    >
-                    <v-card>
-                        <v-card-title>
-                            <span class="text-h5">{{ formTitle }}</span>
-                        </v-card-title>
-
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                <v-col
-                                    cols="12"
-                                    sm="6"
-                                    md="4"
-                                >
-                                    <v-text-field
-                                    v-model="editedItem.sender_city"
-                                    label="გამომ. ქალაქი"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col
-                                    cols="12"
-                                    sm="6"
-                                    md="4"
-                                >
-                                    <v-text-field
-                                    v-model="editedItem.receiver_city"
-                                    label="მიმღ. ქალაქი"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col
-                                    cols="12"
-                                    sm="6"
-                                    md="4"
-                                >
-                                    <v-text-field
-                                    v-model="editedItem.cmr"
-                                    label="CMR კოდი"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col
-                                    cols="12"
-                                    sm="6"
-                                    md="4"
-                                >
-                                    <v-text-field
-                                    v-model="editedItem.car_number"
-                                    label="მანქანის ნომერი"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col
-                                    cols="12"
-                                    sm="6"
-                                    md="4"
-                                >
-                                    <v-text-field
-                                    v-model="editedItem.driver_name"
-                                    label="მძღოლის სახელი"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col
-                                    cols="12"
-                                    sm="6"
-                                    md="4"
-                                >
-                                    <v-text-field
-                                    v-model="editedItem.driver_surname"
-                                    label="მძღოლის გვარი"
-                                    ></v-text-field>
-                                </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
-
-                        <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                            color="red"
-                            outlined
-                            @click="close"
-                        >
-                            გაუქმება
-                        </v-btn>
-                        <v-btn
-                            color="green"
-                            outlined
-                            @click="save"
-                        >
-                            დამახსოვრება
-                        </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                    </v-dialog>
-                    <v-dialog v-model="dialogDelete" max-width="500px">
-                    <v-card>
-                        <v-card-title class="text-h6">ნამდვილად გსურთ მანიფესტის გაუქმება?</v-card-title>
-                        <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" outlined @click="closeDelete">არა</v-btn>
-                        <v-btn color="red" outlined @click="deleteItemConfirm">დიახ</v-btn>
-                        <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                    </v-dialog>
-                </v-toolbar>
-            </template> 
-            <template v-slot:item.total_weight="{ item }">
-                <p>
-                    {{ item.total_weight}} კგ
-                </p>
-            </template>
-            <template v-slot:item.actions="{ item }">
-                <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                            v-bind="attrs"
-                            v-on="on"
-                            medium
-                            class="mr-2"
-                            @click="editItem(item)"
-                            color='primary'
-                        >
-                            mdi-pencil
-                        </v-icon>
-                    </template>
-                    <span>მანიფესტის მონაცემების შეცვლა</span>
-                </v-tooltip>
-                <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                            v-bind="attrs"
-                            v-on="on"
-                            medium
-                            @click="deleteItem(item)"
-                            color='red'
-                        >
-                            mdi-delete
-                        </v-icon>
-                    </template>
-                    <span>ამანათის წაშლა მანიფესტიდან</span>
-                </v-tooltip>
-            </template>
-            <template v-slot:item.details="{ item }">
-                <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                            v-bind="attrs"
-                            v-on="on"
-                            medium
-                            @click="getManifestDetail(item.id)"
-                            color='purple'
-                        >
-                            mdi-information-outline
-                        </v-icon>
-                    </template>
-                    <span>მანიფესტის დეტალები</span>
-                </v-tooltip>
-            </template>
-        </v-data-table>
-        <v-pagination
-            v-model="page"
-            :length="(totalManifests)/20"
-            circle
-            @next="next"
-            @previous='previous'
-        ></v-pagination> 
-  </v-card>
+       <v-app-bar
+           flat
+           color="rgba(0, 0, 0, 0)"
+         >
+           <v-toolbar-title class="text-h6 text--primary">
+             მანიფესტები
+           </v-toolbar-title>
+          
+           <v-spacer></v-spacer>
+ 
+           <v-avatar>
+               <v-icon x-large @click='closeManifest'>mdi-close</v-icon>
+           </v-avatar>
+       </v-app-bar>
+       <v-card-title style="{position: sticky; overflow: auto;}">
+           <v-text-field
+           v-model="search"
+           append-icon="mdi-magnify"
+           label="მანიფესტის მოძებნა"
+           single-line
+           hide-details
+           clearable
+           ></v-text-field>
+       </v-card-title>
+       <v-data-table
+           :headers="headers"
+           :items="manifest"
+           class="elevation-0 overflow-y-auto mx-auto"
+           fixed-header
+           no-data-text='მონაცემები არ არსებობს'
+           no-results-text='მონაცემები ვერ მოიძებნა'
+           :search="search"
+           multi-sort
+           hide-default-footer
+           :loading='loadingManifest'
+           loading-text="მონაცემები იტვირთება"
+           height="625px"
+           :footer-props="{
+                   itemsPerPageOptions:[-1]
+               }"
+       >
+           <template v-slot:top>
+               <v-toolbar
+                   flat
+               >
+                   <v-dialog
+                   v-model="dialog"
+                   max-width="500px"
+                   >
+                   <v-card>
+                       <v-card-title>
+                           <span class="text-h5">{{ formTitle }}</span>
+                       </v-card-title>
+ 
+                       <v-card-text>
+                           <v-container>
+                               <v-row>
+                               <v-col
+                                   cols="12"
+                                   sm="6"
+                                   md="4"
+                               >
+                                   <v-text-field
+                                   v-model="editedItem.sender_city"
+                                   label="გამომ. ქალაქი"
+                                   ></v-text-field>
+                               </v-col>
+                               <v-col
+                                   cols="12"
+                                   sm="6"
+                                   md="4"
+                               >
+                                   <v-text-field
+                                   v-model="editedItem.receiver_city"
+                                   label="მიმღ. ქალაქი"
+                                   ></v-text-field>
+                               </v-col>
+                               <v-col
+                                   cols="12"
+                                   sm="6"
+                                   md="4"
+                               >
+                                   <v-text-field
+                                   v-model="editedItem.cmr"
+                                   label="CMR კოდი"
+                                   ></v-text-field>
+                               </v-col>
+                               <v-col
+                                   cols="12"
+                                   sm="6"
+                                   md="4"
+                               >
+                                   <v-text-field
+                                   v-model="editedItem.car_number"
+                                   label="მანქანის ნომერი"
+                                   ></v-text-field>
+                               </v-col>
+                               <v-col
+                                   cols="12"
+                                   sm="6"
+                                   md="4"
+                               >
+                                   <v-text-field
+                                   v-model="editedItem.driver_name"
+                                   label="მძღოლის სახელი"
+                                   ></v-text-field>
+                               </v-col>
+                               <v-col
+                                   cols="12"
+                                   sm="6"
+                                   md="4"
+                               >
+                                   <v-text-field
+                                   v-model="editedItem.driver_surname"
+                                   label="მძღოლის გვარი"
+                                   ></v-text-field>
+                               </v-col>
+                               </v-row>
+                           </v-container>
+                       </v-card-text>
+ 
+                       <v-card-actions>
+                       <v-spacer></v-spacer>
+                       <v-btn
+                           color="red"
+                           outlined
+                           @click="close"
+                       >
+                           გაუქმება
+                       </v-btn>
+                       <v-btn
+                           color="green"
+                           outlined
+                           @click="save"
+                       >
+                           დამახსოვრება
+                       </v-btn>
+                       </v-card-actions>
+                   </v-card>
+                   </v-dialog>
+                   <v-dialog v-model="dialogDelete" max-width="500px">
+                   <v-card>
+                       <v-card-title class="text-h6">ნამდვილად გსურთ ამანათის გაუქმება?</v-card-title>
+                       <v-card-actions>
+                       <v-spacer></v-spacer>
+                       <v-btn color="blue darken-1" outlined @click="closeDelete">არა</v-btn>
+                       <v-btn color="red" outlined @click="deleteItemConfirm">დიახ</v-btn>
+                       <v-spacer></v-spacer>
+                       </v-card-actions>
+                   </v-card>
+                   </v-dialog>
+               </v-toolbar>
+           </template>
+           <template v-slot:item.total_weight="{ item }">
+               <p>
+                   {{ item.total_weight}} კგ
+               </p>
+           </template>
+           <template v-slot:item.actions="{ item }">
+               <v-tooltip top>
+                   <template v-slot:activator="{ on, attrs }">
+                       <v-icon
+                           v-bind="attrs"
+                           v-on="on"
+                           medium
+                           class="mr-2"
+                           @click="editItem(item)"
+                           color='primary'
+                       >
+                           mdi-pencil
+                       </v-icon>
+                   </template>
+                   <span>მანიფესტის მონაცემების შეცვლა</span>
+               </v-tooltip>
+               <v-tooltip top>
+                   <template v-slot:activator="{ on, attrs }">
+                       <v-icon
+                           v-bind="attrs"
+                           v-on="on"
+                           medium
+                           @click="deleteItem(item)"
+                           color='red'
+                       >
+                           mdi-delete
+                       </v-icon>
+                   </template>
+                   <span>ამანათის წაშლა მანიფესტიდან</span>
+               </v-tooltip>
+           </template>
+           <template v-slot:item.details="{ item }">
+               <v-tooltip top>
+                   <template v-slot:activator="{ on, attrs }">
+                       <v-icon
+                           v-bind="attrs"
+                           v-on="on"
+                           medium
+                           @click="getManifestDetail(item.id)"
+                           color='purple'
+                       >
+                           mdi-information-outline
+                       </v-icon>
+                   </template>
+                   <span>მანიფესტის დეტალები</span>
+               </v-tooltip>
+           </template>
+       </v-data-table>
+       <v-container fluid color="#f5f0f5">
+           <v-row justify="center" color="#f5f0f5">
+               <v-col cols="auto" color="#f5f0f5">
+                   <v-btn text color="primary" @click="next">
+                       მეტი...
+                   </v-btn>
+               </v-col>
+               <v-col cols="auto" color="#f5f0f5">
+                   <v-btn text color="primary" @click="allManifest">
+                       ყველა მანიფესტი
+                   </v-btn>
+               </v-col>
+           </v-row>
+       </v-container>
+       <v-fab-transition>
+           <v-btn
+               v-scroll="onScroll"
+               v-show="fab"
+               fab
+               dark
+               fixed
+               bottom
+               right
+               color="primary"
+               @click="toTop"
+           >
+               <v-icon>mdi-chevron-up</v-icon>
+           </v-btn>
+       </v-fab-transition>
+    </v-card>
 </template>
 
 <script>
@@ -286,6 +308,8 @@ export default {
             car_number: '',
             cmr: '',
         },
+        fab: false,
+        currentUrl: '',
     }),
     watch: {
         search(value) {
@@ -323,6 +347,7 @@ export default {
             };
             axios(options)
             .then((response) => {
+                this.currentUrl = response.data.next
                 this.manifest = response.data.results
                 this.loadingManifest = false
             })
@@ -355,27 +380,39 @@ export default {
             })
         },
         next(){
+            this.loadingManifest = true
+            let baseURL = this.currentUrl;
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.nextPage}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
-                }, 
+                },
             };
             axios(options)
-            .then((response) => {
-                this.manifest = response.data.results
-                this.totalManifests = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
+            .then((response) => {  
+                for (let i = 0; i < response.data.results.length; i++){
+                    this.items.push(response.data.results[i])
+                }
+                this.currentUrl = response.data.next
+                this.totalItems = response.data.count
                 this.loadingManifest = false
             })
             .catch((error) => {
                 console.log(error)
-                this.$toast.error(error.response.data.detail, {
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
                     position: "bottom-left",
                     timeout: 5000,
                     closeOnClick: true,
@@ -388,35 +425,39 @@ export default {
                     closeButton: "button",
                     icon: true,
                     rtl: false
-                });
-                if(error.response.data.detail == 'Given token not valid for any token type' || 
-                error.response.data.detail == 'User is inactive'){
-                    this.logout()
-                }
+                }); 
             })
         },
-        previous(){
+        allManifest(){
+            this.loadingItems = true
+            let baseURL = 'https://apimyposta.online/manifest/';
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.previousPage}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
-                }, 
+                },
             };
             axios(options)
-            .then((response) => {
-                this.manifest = response.data.results
-                this.totalManifests = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
-                this.loadingManifest = false
+            .then((response) => {  
+                this.items = response.data
+                this.loadingItems = false
             })
             .catch((error) => {
                 console.log(error)
-                this.$toast.error(error.response.data.detail, {
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
                     position: "bottom-left",
                     timeout: 5000,
                     closeOnClick: true,
@@ -429,11 +470,7 @@ export default {
                     closeButton: "button",
                     icon: true,
                     rtl: false
-                });
-                if(error.response.data.detail == 'Given token not valid for any token type' || 
-                error.response.data.detail == 'User is inactive'){
-                    this.logout()
-                }
+                }); 
             })
         },
         editItem (item) {
@@ -605,6 +642,14 @@ export default {
                 }
             });
         },
+        onScroll (e) {
+           if (typeof window === 'undefined') return
+               const top = window.pageYOffset ||   e.target.scrollTop || 0
+               this.fab = top > 20
+           },
+        toTop () {
+           this.$vuetify.goTo(0)
+       },
     },
     mounted(){
         this.manifestSearch()
