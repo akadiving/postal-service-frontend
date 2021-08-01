@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <v-main>
-      <transition mode="out-in">
+      <v-slide-x-transition>
         <router-view />
-      </transition>
+      </v-slide-x-transition>
     </v-main>
   </v-app>
 </template>
