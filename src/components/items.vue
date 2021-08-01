@@ -840,8 +840,6 @@ export default {
                 console.log(response)
                 this.items = response.data.results
                 this.totalItems = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
                 this.loadingItems = false
             })
             .catch((error) => {
