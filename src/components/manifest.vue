@@ -619,8 +619,6 @@ export default {
             })
             .then((response) => {
                 console.log(response)
-                //localStorage.removeItem('access')
-                //localStorage.removeItem('refresh')
                 sessionStorage.clear();
                 this.loginPage()
             })

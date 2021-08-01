@@ -827,8 +827,7 @@ export default {
             };
             axios(options)
             .then((response) => {             
-                this.items = response.data.results
-                this.totalItems = response.data.count
+                this.items = response.data
                 this.loadingItems = false
             })
             .catch((error) => {
@@ -1005,8 +1004,8 @@ export default {
                     rtl: false
                 });
                     this.logout()
-                }
-                this.$toast.error(error.response.data.detail, {
+                } else {
+                    this.$toast.error('დაფიქსირდა შეცდომა', {
                     position: "bottom-left",
                     timeout: 5000,
                     closeOnClick: true,
@@ -1020,13 +1019,12 @@ export default {
                     icon: true,
                     rtl: false
                 });
-                
+                } 
             })
         },
         addSignature(item){
             this.dialogSignature = true
             this.newSelected = `${item.id}`
-            this.signature = item.signature
         },
 
         editItem (item) {
@@ -1498,7 +1496,7 @@ export default {
            },
         toTop () {
            this.$vuetify.goTo(0)
-       },
+        },
 
     },
     mounted(){
