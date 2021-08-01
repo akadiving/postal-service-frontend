@@ -206,13 +206,35 @@
                 </v-tooltip>
             </template>
         </v-data-table>
-        <v-pagination
-            v-model="page"
-            :length="(totalManifests)/20"
-            circle
-            @next="next"
-            @previous='previous'
-        ></v-pagination> 
+        <v-container fluid color="#f5f0f5">
+            <v-row justify="center" color="#f5f0f5">
+                <v-col cols="auto" color="#f5f0f5">
+                    <v-btn text color="primary" @click="next">
+                        მეტი...
+                    </v-btn>
+                </v-col>
+                <v-col cols="auto" color="#f5f0f5">
+                    <v-btn text color="primary" @click="allManifest">
+                        ყველა მანიფესტი
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-container>
+        <v-fab-transition>
+            <v-btn
+                v-scroll="onScroll"
+                v-show="fab"
+                fab
+                dark
+                fixed
+                bottom
+                right
+                color="primary"
+                @click="toTop"
+            >
+                <v-icon>mdi-chevron-up</v-icon>
+            </v-btn>
+        </v-fab-transition>
   </v-card>
 </template>
 
@@ -226,8 +248,6 @@ export default {
         search: '',
         totalManifests: '',
         errorM: '',
-        nextPage: '',
-        previousPage: '',
         page: 1,
         selectManifest: '',
         selectEditItem: '',
@@ -286,6 +306,8 @@ export default {
             car_number: '',
             cmr: '',
         },
+        currentUrl: '',
+        fab: false,
     }),
     watch: {
         search(value) {
@@ -305,6 +327,7 @@ export default {
     },
     methods: {
         manifestSearch(manifest){
+            this.loadingManifest = true
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             let baseURL = ``;
             if(!manifest){
@@ -324,12 +347,13 @@ export default {
             axios(options)
             .then((response) => {
                 console.log(response)
+                this.currentUrl = response.data.next
                 this.manifest = response.data.results
                 this.loadingManifest = false
-                console.log(response.data.results[0].items)
             })
             .catch((error) => {
                 console.log(error)
+                this.loadingManifest = false
                 if(error.response.data.detail == 'Given token not valid for any token type') 
                  {
                     this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
@@ -357,11 +381,11 @@ export default {
             })
         },
         next(){
+            this.loadingManifest = true
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.nextPage}`;
             const options = {
                 method: 'GET',
-                baseURL: baseURL,
+                baseURL: this.currentUrl,
                 timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
@@ -372,12 +396,12 @@ export default {
                 console.log(response)
                 this.manifest = response.data.results
                 this.totalManifests = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
+                this.currentUrl = response.data.next
                 this.loadingManifest = false
             })
             .catch((error) => {
                 console.log(error)
+                this.loadingManifest = false
                 this.$toast.error(error.response.data.detail, {
                     position: "bottom-left",
                     timeout: 5000,
@@ -398,29 +422,38 @@ export default {
                 }
             })
         },
-        previous(){
+        allManifest(){
+            this.loadingManifest = true
+            let baseURL = 'http://127.0.0.1:8000/manifest/';
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `${this.previousPage}`;
+            
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 5000,
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
-                }, 
+                },
             };
             axios(options)
-            .then((response) => {
+            .then((response) => {  
                 console.log(response)
-                this.manifest = response.data.results
-                this.totalManifests = response.data.count
-                this.nextPage = response.data.next
-                this.previousPage = response.data.previous
+                this.manifest = response.data
                 this.loadingManifest = false
             })
             .catch((error) => {
                 console.log(error)
-                this.$toast.error(error.response.data.detail, {
+                this.loadingManifest = false
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
                     position: "bottom-left",
                     timeout: 5000,
                     closeOnClick: true,
@@ -433,11 +466,7 @@ export default {
                     closeButton: "button",
                     icon: true,
                     rtl: false
-                });
-                if(error.response.data.detail == 'Given token not valid for any token type' || 
-                error.response.data.detail == 'User is inactive'){
-                    this.logout()
-                }
+                }); 
             })
         },
         editItem (item) {
@@ -506,7 +535,6 @@ export default {
                 });
             })  
         },
-
         close () {
             this.dialog = false
             this.$nextTick(() => {
@@ -514,7 +542,6 @@ export default {
             this.editedIndex = -1
             })
         },
-
         closeDelete () {
             this.dialogDelete = false
             this.$nextTick(() => {
@@ -522,7 +549,6 @@ export default {
             this.editedIndex = -1
             })
         },
-
         save () {
             console.log(this.editedItem)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
@@ -612,6 +638,14 @@ export default {
                 }
             });
         },
+        onScroll (e) {
+            if (typeof window === 'undefined') return
+                const top = window.pageYOffset ||   e.target.scrollTop || 0
+                this.fab = top > 20
+            },
+        toTop () {
+            this.$vuetify.goTo(0)
+        }
     },
     mounted(){
         this.manifestSearch()

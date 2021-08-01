@@ -104,8 +104,9 @@
         </v-col>
 
         <!-- components -->
+        
         <v-col cols="12" v-else>
-          <transition name="fade-transition">
+          <v-slide-x-transition>
             <component 
             v-bind:is="component"
             :manifestID="manifestID"
@@ -115,7 +116,7 @@
             @closeManifestDetail='closeManifestDetail'
             @getManifestDetail='getManifestDetail'
             ></component>
-          </transition>
+          </v-slide-x-transition>
         </v-col>
         <!-- components -->
       </v-row>
@@ -245,36 +246,26 @@ export default {
     items() {
       if (this.component !== "Items") {
         this.component = "Items";
-      } else {
-        this.component = "";
       }
     },
     manifest() {
       if (this.component !== "Manifest") {
         this.component = "Manifest";
-      } else {
-        this.component = "";
-      }
+      } 
     },
     addItem() {
       if (this.component !== "AddItem") {
         this.component = "AddItem";
-      } else {
-        this.component = "";
-      }
+      } 
     },
     addManifest() {
       if (this.component !== "AddManifest") {
         this.component = "AddManifest";
-      } else {
-        this.component = "";
-      }
+      } 
     },
     ManifestDetail() {
       if (this.component !== "ManifestDetail") {
         this.component = "ManifestDetail";
-      } else {
-        this.component = "";
       }
     },
     getManifestDetail(id){
@@ -285,7 +276,13 @@ export default {
       this.drawer = !this.drawer
     },
     close(){
-      this.component = '';
+      if (!this.component){
+        this.loading = true
+      } else {
+        this.loading = false
+        this.preload()
+        this.component = '';
+      }
     },
     closeManifestDetail(){
       this.manifest()

@@ -404,7 +404,6 @@
                             <v-btn color="red" outlined @click="clear">წაშლა</v-btn>
                             <v-btn color="green" outlined @click="signItem()"
                             >დადასტურება</v-btn>
-                            <v-btn color="green" outlined @click="drawSignature">draw</v-btn>
                             <v-spacer></v-spacer>
                             </v-card-actions>
                         </v-card>
@@ -586,13 +585,37 @@
                 </td>
             </template> 
         </v-data-table>
-        <v-btn text color="primary" @click="next">
-            მეტი...
-        </v-btn>
-        <v-btn text color="primary" @click="allItems">
-            ყველა ამანათი
-        </v-btn>
+        <v-container fluid color="#f5f0f5">
+            <v-row justify="center" color="#f5f0f5">
+                <v-col cols="auto" color="#f5f0f5">
+                    <v-btn text color="primary" @click="next">
+                        მეტი...
+                    </v-btn>
+                </v-col>
+                <v-col cols="auto" color="#f5f0f5">
+                    <v-btn text color="primary" @click="allItems">
+                        ყველა ამანათი
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-container>        
         </div>
+        <v-fab-transition>
+            <v-btn
+            v-scroll="onScroll"
+            v-show="fab"
+            fab
+            dark
+            fixed
+            bottom
+            right
+            color="primary"
+            @click="toTop"
+            >
+                <v-icon>mdi-chevron-up</v-icon>
+            </v-btn>
+        </v-fab-transition>
+        
   </v-card>
 </template>
 
@@ -713,8 +736,9 @@ export default {
             delivered: '',
             manifest_number: '',
         },
-        currentUrl: 'http://127.0.0.1:8000/items/search/?search=',
-        signature: {}
+        currentUrl: '',
+        signature: {},
+        fab: false
     }),
     watch: {
         search(value) {
@@ -1016,9 +1040,6 @@ export default {
         addSignature(item){
             this.dialogSignature = true
             this.newSelected = `${item.id}`
-            this.signature = item.signature
-            this.drawSignature()
-
         },
         editItem (item) {
             this.editedIndex = this.items.indexOf(item)
@@ -1053,7 +1074,6 @@ export default {
             const options = {
                 method: 'GET',
                 baseURL: baseURL,
-                timeout: 10000,
                 responseType: "blob",
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
@@ -1404,7 +1424,6 @@ export default {
             let options = {
                 method: 'POST',
                 baseURL: baseURL,
-                timeout: 10000,
                 responseType: "blob",
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
@@ -1421,7 +1440,6 @@ export default {
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
-                    timeout: 10000,
                     responseType: "blob",
                     headers: {
                         Authorization: 'Bearer ' + accessToken.value
@@ -1435,7 +1453,6 @@ export default {
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
-                    timeout: 10000,
                     responseType: "blob",
                     headers: {
                         Authorization: 'Bearer ' + accessToken.value
@@ -1453,7 +1470,6 @@ export default {
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
-                    timeout: 10000,
                     responseType: "blob",
                     headers: {
                         Authorization: 'Bearer ' + accessToken.value
@@ -1494,6 +1510,14 @@ export default {
                     rtl: false
                 });
             })
+        },
+        onScroll (e) {
+            if (typeof window === 'undefined') return
+                const top = window.pageYOffset ||   e.target.scrollTop || 0
+                this.fab = top > 20
+            },
+        toTop () {
+            this.$vuetify.goTo(0)
         }
     },
     mounted(){

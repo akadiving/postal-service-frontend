@@ -35,7 +35,7 @@
                   name="email"
                   prepend-inner-icon="mdi-account"
                   clearable
-                  
+                  id="email"
                   required
                 ></v-text-field>
               </v-col>
@@ -241,10 +241,14 @@ export default {
           this.logout()
         }
       })
+    },
+    focusEmail(){
+      document.getElementById('email').focus()
     }
   },
   mounted() {
     document.title = 'შესვლა'
+    this.focusEmail()
     if(sessionStorage.getItem('access')){
       this.adminPage()
     }
