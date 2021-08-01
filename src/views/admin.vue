@@ -105,7 +105,7 @@
 
         <!-- components -->
         <v-col cols="12" v-else>
-          <transition name="fade-transition">
+          <v-slide-x-transition>
             <component 
             v-bind:is="component"
             :manifestID="manifestID"
@@ -115,7 +115,7 @@
             @closeManifestDetail='closeManifestDetail'
             @getManifestDetail='getManifestDetail'
             ></component>
-          </transition>
+          </v-slide-x-transition>
         </v-col>
         <!-- components -->
       </v-row>
@@ -275,11 +275,11 @@ export default {
       this.drawer = !this.drawer
     },
     close(){
-      if(!this.component){
-        this.loading = false
-        this.component = '';
-        this.preload()
+      if (!this.component){
+        this.loading = true
       } else {
+        this.loading = false
+        this.preload()
         this.component = '';
       }
     },
