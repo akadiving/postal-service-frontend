@@ -1402,7 +1402,6 @@ export default {
             let options = {
                 method: 'POST',
                 baseURL: baseURL,
-                timeout: 10000,
                 responseType: "blob",
                 headers: {
                     Authorization: 'Bearer ' + accessToken.value
@@ -1415,23 +1414,23 @@ export default {
                     this.newSelected.push(element.id)
                 });
                 this.newSelected = [...new Set(this.newSelected)]
+                console.log(this.newSelected)
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
-                    timeout: 10000,
                     responseType: "blob",
                     headers: {
                         Authorization: 'Bearer ' + accessToken.value
                     },
                     data: {id: this.newSelected} 
                 };
-            } 
+            }
             else if(this.selected.length <= 0){
                 this.newSelected = []
+                console.log(this.newSelected)
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
-                    timeout: 10000,
                     responseType: "blob",
                     headers: {
                         Authorization: 'Bearer ' + accessToken.value
@@ -1445,10 +1444,10 @@ export default {
                     this.newSelected.push(element.id)
                 });
                 this.newSelected = [...new Set(this.newSelected)]
+                console.log(this.newSelected)
                 options = {
                     method: 'POST',
                     baseURL: baseURL,
-                    timeout: 10000,
                     responseType: "blob",
                     headers: {
                         Authorization: 'Bearer ' + accessToken.value
@@ -1458,6 +1457,7 @@ export default {
             }
             await axios(options)
             .then((response) => {
+                console.log(response)
                 const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
                 const link = document.createElement('a');
                 link.href = url;
