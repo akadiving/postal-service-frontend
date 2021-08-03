@@ -531,6 +531,9 @@
                         <v-col cols='auto' class="ma-2 mt-3">
                             კომპანია - {{item.company}} 
                         </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            ტელ. ნომერი - {{item.receiver_number}} 
+                        </v-col>
                         
                         <v-col cols='auto' class="ma-2 mt-3">
                             ჩამოსულია - <v-chip
