@@ -140,6 +140,7 @@
             class="elevation-0 overflow-y-auto mx-auto"
             fixed-header
             show-select
+            disable-pagination
             no-data-text='მონაცემები არ არსებობს'
             no-results-text='მონაცემები ვერ მოიძებნა'
             :search="search"
@@ -148,7 +149,7 @@
             loading-text="მონაცემები იტვირთება"
             show-expand
             hide-default-footer
-            height="625px"
+            height="500px"
         >
             <template v-slot:top>
                 <v-toolbar flat style="{overflow: auto; z-index: 1;}">
