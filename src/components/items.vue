@@ -4,35 +4,46 @@
             flat
             color="rgba(0, 0, 0, 0)"
           >
-            <v-container fluid>
-                <v-row justify="start" >
-                    <v-col cols="12">
-                        <v-card-title style="{position: sticky; overflow: auto;}">
-                            <v-text-field
-                                v-model="search"
-                                append-icon="mdi-magnify"
-                                label="ამანათის მოძებნა"
-                                single-line
-                                hide-details
-                                clearable
-                            ></v-text-field>
-                        </v-card-title>
-                    </v-col>
-                </v-row>
+            <v-toolbar-title class="text-h6 text--primary">
+              ამანათები
+            </v-toolbar-title>
 
-                <v-row justify="start">
-                    <v-col cols="auto">
-                        <v-menu
-                            ref="menu"
-                            v-model="date_menu"
-                            :close-on-content-click="false"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="auto"
-                            class="ma-0"
-                        >
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
+            <v-spacer></v-spacer>
+
+            <v-avatar>
+                <v-icon x-large @click='closeItems'>mdi-close</v-icon>
+            </v-avatar>
+
+        </v-app-bar>
+        <v-container fluid>
+            <v-row justify="start" >
+                <v-col cols="12">
+                    <v-card-title style="{position: sticky; overflow: auto;}">
+                        <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="ამანათის მოძებნა"
+                        single-line
+                        hide-details
+                        clearable
+                        ></v-text-field>
+                    </v-card-title>
+                </v-col>
+                
+            </v-row>
+            <v-row justify="start">
+                <v-col cols="auto">
+                    <v-menu
+                        ref="menu"
+                        v-model="date_menu"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                        class="ma-0"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
                                 v-model="date_start"
                                 label="-დან"
                                 class="ma-0"
@@ -42,19 +53,19 @@
                                 @click:clear="clearButtonStart"
                                 v-bind="attrs"
                                 v-on="on"
-                                ></v-text-field>
-                            </template>
-                            <v-date-picker
-                            v-model="date_start"
-                            scrollable
-                            no-title
-                            @input="date_menu = false"
-                            >
-                            </v-date-picker>
-                        </v-menu>
-                    </v-col>
-                    <v-col cols="auto">
-                        <v-menu
+                            ></v-text-field>
+                        </template>
+                        <v-date-picker
+                        v-model="date_start"
+                        scrollable
+                        no-title
+                        @input="date_menu = false"
+                        >
+                        </v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="auto">
+                    <v-menu
                         ref="menu"
                         class="ma-0"
                         v-model="end_menu"
@@ -62,64 +73,67 @@
                         transition="scale-transition"
                         offset-y
                         min-width="auto"
-                        >
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                class="ma-0"
-                                v-model="date_end"
-                                label="-მდე"
-                                prepend-icon="mdi-calendar"
-                                outlined
-                                clearable
-                                @click:clear="clearButtonEnd"
-                                v-bind="attrs"
-                                v-on="on"
-                                ></v-text-field>
-                            </template>
-                            <v-date-picker
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                            class="ma-0"
                             v-model="date_end"
-                            scrollable
-                            no-title
-                            @input="end_menu = false"
-                            >
-                            </v-date-picker>
-                        </v-menu>
-                    </v-col>
-                    <v-col cols="auto">
-                        <v-btn
+                            label="-მდე"
+                            prepend-icon="mdi-calendar"
+                            outlined
+                            clearable
+                            @click:clear="clearButtonEnd"
+                            v-bind="attrs"
+                            v-on="on"
+                            ></v-text-field>
+                        </template>
+                        <v-date-picker
+                        v-model="date_end"
+                        scrollable
+                        no-title
+                        @input="end_menu = false"
+                        >
+                        </v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn
                         elevation="0"
                         large
                         color="primary"
                         dark
                         @click="filterByDate"
-                        >
+                    >
                         ფილტრი
-                        </v-btn>
-                    </v-col>
-                    <v-col cols="auto">
-                        <v-btn 
-                        large 
-                        outlined
+                    </v-btn>
+                       
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn  
+                    large 
+                    outlined
+                    color="green"
+                    class="ma-0">
+                        <v-icon large
                         color="green"
-                        class="ma-0">
-                            <v-icon large
-                            color="green"
-                            @click="exportExcell">
-                                mdi-microsoft-excel
-                            </v-icon>
-                        </v-btn>
-                    </v-col>
-                    <v-col cols="auto">
-                        <v-checkbox
-                        class="ma-0"
-                        v-model="received"
-                        label="გაცემულია"
-                        ></v-checkbox>
-                    </v-col>
-                </v-row>
-            </v-container>
+                        @click="exportExcell">
+                            mdi-microsoft-excel
+                        </v-icon>
+                    </v-btn>
+                </v-col>
+                <v-col cols="auto">
+                    <v-checkbox
+                    class="ma-0"
+                    v-model="received"
+                    label="გაცემულია"
+                    ></v-checkbox>
+                </v-col>
+            </v-row>
+        </v-container>
+        
         <div>
         <v-data-table
+            style="{overflow: auto; z-index: 1;}"
             v-model="selected"
             :headers="headers"
             :items="items"
@@ -135,12 +149,9 @@
             show-expand
             hide-default-footer
             height="625px"
-            :footer-props="{
-                    itemsPerPageOptions:[-1]
-                }"
         >
             <template v-slot:top>
-                <v-toolbar flat>
+                <v-toolbar flat style="{overflow: auto; z-index: 1;}">
                     <!-- edit dialog -->
                     <v-dialog
                     v-model="dialog"
@@ -602,7 +613,7 @@
                         <v-col cols='auto' class="ma-2 mt-3">
                             ტელ. ნომერი - {{item.receiver_number}} 
                         </v-col>
-
+                        
                         <v-col cols='auto' class="ma-2 mt-3">
                             ჩამოსულია - <v-chip
                                 v-if="!item.arrived"
@@ -665,7 +676,7 @@
                                     v-bind="attrs"
                                     v-on="on"
                                     >
-                                    mdi-signature-image
+                                        mdi-signature-image
                                     </v-icon>
                                 </template>
                                 <v-card>
@@ -680,18 +691,23 @@
                                                 x-large
                                                 dark 
                                                 @click="showSignature = false">
-                                                mdi-close-circle
+                                                    mdi-close-circle
                                                 </v-icon>
+
                                             </v-col>
                                         </v-row>
                                     </v-card-title>
                                     <v-divider></v-divider>
                                     <v-img
-                                        :src="item.signature"
-                                        height="100%"
-                                        width="100%"
+                                    :src="item.signature"
+                                    height="100%"
+                                    width="100%"
                                     >
+                                    
                                     </v-img>
+                                    <v-card-actions>
+                                    
+                                    </v-card-actions>
                                 </v-card>
                             </v-dialog>
                         </v-col>
@@ -699,28 +715,36 @@
                 </td>
             </template> 
         </v-data-table>
-        <v-btn text color="primary" @click="next">
-            მეტი...
-        </v-btn>
-        <v-btn text color="primary" @click="allItems">
-            ყველა ამანათი
-        </v-btn>
+        <v-container fluid color="#f5f0f5">
+            <v-row justify="center" color="#f5f0f5">
+                <v-col cols="auto" color="#f5f0f5">
+                    <v-btn text color="primary" @click="next">
+                        მეტი...
+                    </v-btn>
+                </v-col>
+                <v-col cols="auto" color="#f5f0f5">
+                    <v-btn text color="primary" @click="allItems">
+                        ყველა ამანათი
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-container>        
         </div>
         <v-fab-transition>
-           <v-btn
-           v-scroll="onScroll"
-           v-show="fab"
-           fab
-           dark
-           fixed
-           bottom
-           right
-           color="primary"
-           @click="toTop"
-           >
-               <v-icon>mdi-chevron-up</v-icon>
-           </v-btn>
-       </v-fab-transition>
+            <v-btn
+            v-scroll="onScroll"
+            v-show="fab"
+            fab
+            dark
+            fixed
+            bottom
+            right
+            color="primary"
+            @click="toTop"
+            >
+                <v-icon>mdi-chevron-up</v-icon>
+            </v-btn>
+        </v-fab-transition>
   </v-card>
 </template>
 
