@@ -744,7 +744,6 @@
                 <v-icon>mdi-chevron-up</v-icon>
             </v-btn>
         </v-fab-transition>
-        
   </v-card>
 </template>
 
@@ -965,7 +964,6 @@ export default {
             } else {
                 this.date_start = ''
             }
-            
         },
         clearButtonEnd(){
             if(!this.date_start){
