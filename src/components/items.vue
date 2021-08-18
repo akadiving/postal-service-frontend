@@ -15,16 +15,122 @@
             </v-avatar>
 
         </v-app-bar>
-        <v-card-title style="{position: sticky; overflow: auto;}">
-            <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="ამანათის მოძებნა"
-            single-line
-            hide-details
-            clearable
-            ></v-text-field>
-        </v-card-title>
+        <v-container fluid>
+            <v-row justify="start" >
+                <v-col cols="12">
+                    <v-card-title style="{position: sticky; overflow: auto;}">
+                        <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="ამანათის მოძებნა"
+                        single-line
+                        hide-details
+                        clearable
+                        ></v-text-field>
+                    </v-card-title>
+                </v-col>
+                
+            </v-row>
+            <v-row justify="start">
+                <v-col cols="auto">
+                    <v-menu
+                        ref="menu"
+                        v-model="date_menu"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                        class="ma-0"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                                v-model="date_start"
+                                label="-დან"
+                                class="ma-0"
+                                prepend-icon="mdi-calendar"
+                                outlined
+                                clearable
+                                @click:clear="clearButtonStart"
+                                v-bind="attrs"
+                                v-on="on"
+                            ></v-text-field>
+                        </template>
+                        <v-date-picker
+                        v-model="date_start"
+                        scrollable
+                        no-title
+                        @input="date_menu = false"
+                        >
+                        </v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="auto">
+                    <v-menu
+                        ref="menu"
+                        class="ma-0"
+                        v-model="end_menu"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                            class="ma-0"
+                            v-model="date_end"
+                            label="-მდე"
+                            prepend-icon="mdi-calendar"
+                            outlined
+                            clearable
+                            @click:clear="clearButtonEnd"
+                            v-bind="attrs"
+                            v-on="on"
+                            ></v-text-field>
+                        </template>
+                        <v-date-picker
+                        v-model="date_end"
+                        scrollable
+                        no-title
+                        @input="end_menu = false"
+                        >
+                        </v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn
+                        elevation="0"
+                        large
+                        color="primary"
+                        dark
+                        @click="filterByDate"
+                    >
+                        ფილტრი
+                    </v-btn>
+                       
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn  
+                    large 
+                    outlined
+                    color="green"
+                    class="ma-0">
+                        <v-icon large
+                        color="green"
+                        @click="exportExcell">
+                            mdi-microsoft-excel
+                        </v-icon>
+                    </v-btn>
+                </v-col>
+                <v-col cols="auto">
+                    <v-checkbox
+                    class="ma-0"
+                    v-model="received"
+                    label="გაცემულია"
+                    ></v-checkbox>
+                </v-col>
+            </v-row>
+        </v-container>
+        
         <div>
         <v-data-table
             v-model="selected"
@@ -42,37 +148,9 @@
             show-expand
             hide-default-footer
             height="625px"
-            :footer-props="{
-                    itemsPerPageOptions:[-1]
-                }"
         >
             <template v-slot:top>
-                <v-toolbar flat>
-                    <v-container fluid>
-                        <v-row justify="start">
-                            <v-col cols="auto">
-                                <v-btn  
-                                large 
-                                text
-                                class="ma-2">
-                                    <v-icon large
-                                    color="green"
-                                    @click="exportExcell">
-                                        mdi-microsoft-excel
-                                    </v-icon>
-                                </v-btn>
-                            </v-col>
-                            <v-col cols="auto">
-                                <v-checkbox
-                                class="mt-4"
-                                v-model="received"
-                                label="გაცემულია"
-                                ></v-checkbox>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                   
-                    
+                <v-toolbar flat style="{overflow: auto; z-index: 1;}">
                     <!-- edit dialog -->
                     <v-dialog
                     v-model="dialog"
@@ -584,6 +662,54 @@
                             :value="item.description"
                             ></v-textarea> 
                         </v-col>
+                        <v-col cols='auto' class="ma-2 mt-3">
+                            <v-dialog
+                            v-model="showSignature"
+                            width="500"
+                            >
+                                <template v-slot:activator="{ on, attrs }">
+                                    ხელმოწერა -
+                                    <v-icon
+                                    large
+                                    color='orange'
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    >
+                                        mdi-signature-image
+                                    </v-icon>
+                                </template>
+                                <v-card>
+                                    <v-card-title class="text-h5 white--text primary">
+                                        <v-row justify="start">
+                                            <v-col cols="auto">
+                                                მიმღების ხელმოწერა
+                                            </v-col>
+                                            <v-spacer></v-spacer>
+                                            <v-col cols="auto">
+                                                <v-icon 
+                                                x-large
+                                                dark 
+                                                @click="showSignature = false">
+                                                    mdi-close-circle
+                                                </v-icon>
+
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-title>
+                                    <v-divider></v-divider>
+                                    <v-img
+                                    :src="item.signature"
+                                    height="100%"
+                                    width="100%"
+                                    >
+                                    
+                                    </v-img>
+                                    <v-card-actions>
+                                    
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </v-col>
                     </v-row>
                 </td>
             </template> 
@@ -634,7 +760,12 @@ export default {
         currency: currency,
         newManifest: '',
         received: false,
+        showSignature: false,
         errorM: '',
+        date_start: '',
+        date_end: '',
+        date_menu: false,
+        end_menu: false,
         selected: [],
         validManifest: false,
         signed: false,
@@ -827,6 +958,23 @@ export default {
                 }); 
             })
         },
+        clearButtonStart(){
+            if(!this.date_end){
+                this.itemSearch()
+                this.date_start = ''
+            } else {
+                this.date_start = ''
+            }
+            
+        },
+        clearButtonEnd(){
+            if(!this.date_start){
+                this.itemSearch()
+                this.date_end = ''
+            } else {
+                this.date_end = ''
+            }
+        },
         itemDeliveredSearch(){
             let baseURL = `http://127.0.0.1:8000/items/delivered/search/?search=`;
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
@@ -841,9 +989,58 @@ export default {
             axios(options)
             .then((response) => {             
                 console.log(response)
-                this.items = response.data.results
+                this.items = response.data
                 this.totalItems = response.data.count
                 this.loadingItems = false
+            })
+            .catch((error) => {
+                console.log(error)
+                if(error.response.data.detail == 'Given token not valid for any token type') 
+                 {
+                    this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
+                    this.logout()
+                } else if(error.response.data.detail == 'User is inactive'){
+                    this.errorM = "თქვენ არ გაქვთ შესვლის უფლება"
+                    this.logout()
+                } else{
+                    this.errorM = error.response.data.detail
+                }
+                this.$toast.error(this.errorM, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                }); 
+            })
+        },
+        filterByDate(){
+            let baseURL = `http://127.0.0.1:8000/items/filter-by-date/`;
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            
+            const options = {
+                method: 'POST',
+                baseURL: baseURL,
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+                data: {start: this.date_start, end: this.date_end}
+            };
+            axios(options)
+            .then((response) => {             
+                console.log(response)
+                this.items = response.data
+                this.totalItems = response.data.count
+                this.loadingItems = false
+                this.date_menu = false
+                this.end_menu = false
             })
             .catch((error) => {
                 console.log(error)
@@ -1519,7 +1716,7 @@ export default {
             },
         toTop () {
             this.$vuetify.goTo(0)
-        }
+        },
     },
     mounted(){
         this.itemSearch()
