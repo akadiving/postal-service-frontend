@@ -128,6 +128,29 @@
                     label="გაცემულია"
                     ></v-checkbox>
                 </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto" id="package" class="mb-0 mr-5 pa-0">
+                    <v-card
+                        v-ripple="{ class: `secondary--text`}"
+                        @click="addItem"
+                        elevation="0"
+                    >
+                        <v-avatar
+                        size="64"
+                        tile
+                        >
+                        <v-img src="../assets/package-box-svgrepo-com.svg"></v-img>
+                        </v-avatar>
+                        <v-card-text>
+                        <v-row align="center">
+                            <v-col class="text-body2 text--primary"
+                            cols="12">
+                            ამანათის დამატება
+                            </v-col>
+                        </v-row>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
             </v-row>
         </v-container>
         
@@ -1715,6 +1738,9 @@ export default {
         toTop () {
             this.$vuetify.goTo(0)
         },
+        addItem() {
+            this.$emit('addItem');
+        },
     },
     mounted(){
         this.itemSearch()
@@ -1731,6 +1757,14 @@ export default {
 
 .v-data-table .v-data-table__wrapper {
     overflow: unset;
+}
+
+#package{
+  cursor: pointer;
+  transition: all .2s ease-in-out; 
+}
+#package:hover {
+  transform: scale(1.05);
 }
 
 #signature {

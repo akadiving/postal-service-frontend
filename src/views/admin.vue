@@ -115,6 +115,8 @@
             @closeManifest='close'
             @closeManifestDetail='closeManifestDetail'
             @getManifestDetail='getManifestDetail'
+            @addItem="addItem"
+            @addManifest="addManifest"
             ></component>
           </v-slide-x-transition>
         </v-col>
