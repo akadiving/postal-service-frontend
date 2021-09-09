@@ -14,16 +14,48 @@
                <v-icon x-large @click='closeManifest'>mdi-close</v-icon>
            </v-avatar>
        </v-app-bar>
-       <v-card-title style="{position: sticky; overflow: auto;}">
-           <v-text-field
-           v-model="search"
-           append-icon="mdi-magnify"
-           label="მანიფესტის მოძებნა"
-           single-line
-           hide-details
-           clearable
-           ></v-text-field>
-       </v-card-title>
+       <v-container fluid>
+           <v-row justify="start">
+               <v-col cols="12">
+                   <v-card-title style="{position: sticky; overflow: auto;}">
+                        <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="მანიფესტის მოძებნა"
+                        single-line
+                        hide-details
+                        clearable
+                        ></v-text-field>
+                    </v-card-title>
+               </v-col>
+           </v-row>
+
+           <v-row justify="end">
+               <v-col cols="auto" id="package" class="mb-0 mr-5 pa-0">
+                    <v-card
+                        v-ripple="{ class: `secondary--text`}"
+                        @click="addManifest"
+                        elevation="0"
+                    >
+                        <v-avatar
+                        size="64"
+                        tile
+                        >
+                        <v-img src="../assets/list-svgrepo-com.svg"></v-img>
+                        </v-avatar>
+                        <v-card-text>
+                        <v-row align="center">
+                            <v-col class="text-body2 text--primary"
+                            cols="12">
+                            მანიფესტის დამატება
+                            </v-col>
+                        </v-row>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+           </v-row>
+       </v-container>
+       
        <v-data-table
            :headers="headers"
            :items="manifest"
@@ -648,9 +680,21 @@ export default {
         toTop () {
            this.$vuetify.goTo(0)
        },
+       addManifest(){
+           this.$emit('addManifest')
+       }
     },
     mounted(){
         this.manifestSearch()
     }
 }
 </script>
+<style scoped>
+#package{
+  cursor: pointer;
+  transition: all .2s ease-in-out; 
+}
+#package:hover {
+  transform: scale(1.05);
+}
+</style>
