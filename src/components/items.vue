@@ -128,6 +128,7 @@
                     label="გაცემულია"
                     ></v-checkbox>
                 </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="auto" id="package" class="mb-0 mr-5 pa-0">
                     <v-card
                         v-ripple="{ class: `secondary--text`}"
