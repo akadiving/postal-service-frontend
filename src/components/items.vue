@@ -172,7 +172,7 @@
             loading-text="მონაცემები იტვირთება"
             show-expand
             hide-default-footer
-            height="500px"
+            height="440px"
         >
             <template v-slot:top>
                 <v-toolbar flat style="{overflow: auto; z-index: 1;}">
