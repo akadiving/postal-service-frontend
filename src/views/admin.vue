@@ -66,16 +66,41 @@
             >
               <v-img src="../assets/package-box-svgrepo-com.svg"></v-img>
             </v-avatar>
-            <v-card-text class="pb-3">
+            <v-card-text class="pb-3 mt-3">
               <v-row align="center">
-                <v-col class="text-h6 text--primary"
+                <v-col class="text-sm-body-1 text-lg-h6 text--primary"
                 cols="12">
                   ამანათის დამატება
                 </v-col>
               </v-row>
             </v-card-text>
           </v-card>
-          
+        </v-col>
+
+        <v-col cols="auto" v-if="!component" id="package" class='mt-4'>
+          <v-card
+            height='230'
+            width='245'
+            size='144'
+            v-ripple="{ class: `secondary--text`}"
+            @click="UploadExcel"
+          >
+            <v-avatar
+            class="mt-3"
+            size="144"
+            tile
+            >
+              <v-img src="../assets/upload.svg"></v-img>
+            </v-avatar>
+            <v-card-text class="pb-3 mt-3">
+              <v-row align="center">
+                <v-col class="text-sm-body-1 text-lg-h6 text--primary"
+                cols="12">
+                  ექსელის ატვირთვა
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
         </v-col>
         <v-col cols="auto" v-if="!component" id="package" class='mt-4'>
           <v-card
@@ -92,9 +117,9 @@
             >
               <v-img src="../assets/list-svgrepo-com.svg"></v-img>
             </v-avatar>
-            <v-card-text class="pb-3">
+            <v-card-text class="pb-3 mt-3">
               <v-row align="center">
-                <v-col class="text-h6 text--primary"
+                <v-col class="text-sm-body-1 text-lg-h6 text--primary"
                 cols="12">
                   მანიფესტის დამატება
                 </v-col>
@@ -104,6 +129,7 @@
         </v-col>
 
         <!-- components -->
+        
         <v-col cols="12" v-else>
           <v-slide-x-transition>
             <component 
@@ -114,8 +140,8 @@
             @closeManifest='close'
             @closeManifestDetail='closeManifestDetail'
             @getManifestDetail='getManifestDetail'
-            @addManifest='addManifest'
-            @addItem='addItem'
+            @addItem="addItem"
+            @addManifest="addManifest"
             ></component>
           </v-slide-x-transition>
         </v-col>
@@ -134,6 +160,7 @@ import Items from '../components/items.vue'
 import Manifest from '../components/manifest.vue'
 import AddItem from '../components/addItem.vue'
 import AddManifest from '../components/addManifest.vue'
+import UploadExcel from '../components/uploadExcel.vue'
 import ManifestDetail from '../components/manifestDetail.vue'
 import Preloader from '../components/preloader.vue'
 
@@ -148,6 +175,7 @@ export default {
     'AddItem': AddItem,
     'ManifestDetail': ManifestDetail,
     'AddManifest':AddManifest,
+    'UploadExcel':UploadExcel
   },
   data: () => ({
     adminName: '',
@@ -252,21 +280,26 @@ export default {
     manifest() {
       if (this.component !== "Manifest") {
         this.component = "Manifest";
-      }
+      } 
     },
     addItem() {
       if (this.component !== "AddItem") {
         this.component = "AddItem";
-      }
+      } 
     },
     addManifest() {
       if (this.component !== "AddManifest") {
         this.component = "AddManifest";
-      }
+      } 
     },
     ManifestDetail() {
       if (this.component !== "ManifestDetail") {
         this.component = "ManifestDetail";
+      }
+    },
+    UploadExcel() {
+      if (this.component !== "UploadExcel") {
+        this.component = "UploadExcel";
       }
     },
     getManifestDetail(id){
@@ -293,7 +326,7 @@ export default {
         this.loading = true;
       }, 1000);
     },
-    
+    //get current user
     
   },
   mounted() {

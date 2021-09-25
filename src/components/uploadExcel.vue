@@ -247,7 +247,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 localStorage.setItem('item_id', JSON.stringify(response.data.item_id))
                 this.item_id = response.data.item_id
                 this.$toast.success(`${response.data.message}`, {
@@ -270,7 +269,6 @@ export default {
                 this.files = null
             })
             .catch((error) => {
-                console.log(error)
                 if(error.response.data.detail == 'Given token not valid for any token type') 
                  {
                     this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
@@ -302,7 +300,6 @@ export default {
         stickers(){
             var arr = JSON.parse( localStorage.getItem('item_id'));
             this.item_id = arr
-            console.log(this.item_id)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `https://apimyposta.online/items/stickers/`;
             const options = {
@@ -315,11 +312,9 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.items = response.data
             })
             .catch((error) => {
-                console.log(error)
                 if(error.response.data.detail == 'Given token not valid for any token type') 
                  {
                     this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
@@ -361,7 +356,6 @@ export default {
             };
             await axios(options)
             .then((response) => {
-                console.log(response)
                 const blob =  new Blob([response.data],{type: 'application/pdf'});
                 const objectUrl = URL.createObjectURL(blob);
                 printJS(objectUrl);
@@ -375,7 +369,6 @@ export default {
                 this.stickers()
             })
             .catch((error) => {
-                console.log(error)
                 this.$toast.error(error.response.data.detail, {
                     position: "bottom-left",
                     timeout: 5000,
@@ -408,7 +401,9 @@ export default {
         },
     },
     mounted(){
-        this.stickers()
+        if (localStorage.getItem('item_id')){
+            this.stickers()
+        }
         this.upload = false
     }  
 }
