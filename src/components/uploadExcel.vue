@@ -22,7 +22,7 @@
                         <v-card
                             v-ripple="{ class: `secondary--text`}"
                             elevation="0"
-                            href="../assets/Sample Form.xlsx" download
+                            @click="getExcel"
                         >
                             <v-avatar
                             size="64"
@@ -217,9 +217,46 @@ export default {
                 console.log(error)
             })
         },
+        async getExcel(){
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `http://127.0.0.1:8000/items/get-excel/`;
+            const options = {
+                method: 'GET',
+                baseURL: baseURL,
+                responseType: "blob",
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                }, 
+            };
+            await axios(options)
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'}));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `Sample-Form.xlsx`);
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch((error) => {
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+            })
+        },
         deleteItems(){
             localStorage.removeItem('item_id')
-            this.stickers()
+            
         },
         removeItem(item){
             var arr = JSON.parse( localStorage.getItem('item_id'));
@@ -247,7 +284,6 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 localStorage.setItem('item_id', JSON.stringify(response.data.item_id))
                 this.item_id = response.data.item_id
                 this.$toast.success(`${response.data.message}`, {
@@ -270,7 +306,6 @@ export default {
                 this.files = null
             })
             .catch((error) => {
-                console.log(error)
                 if(error.response.data.detail == 'Given token not valid for any token type') 
                  {
                     this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
@@ -302,7 +337,6 @@ export default {
         stickers(){
             var arr = JSON.parse( localStorage.getItem('item_id'));
             this.item_id = arr
-            console.log(this.item_id)
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `http://127.0.0.1:8000/items/stickers/`;
             const options = {
@@ -315,11 +349,9 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.items = response.data
             })
             .catch((error) => {
-                console.log(error)
                 if(error.response.data.detail == 'Given token not valid for any token type') 
                  {
                     this.errorM = "გთხოვთ თავიდან შეიყვანოთ მონაცემები"
@@ -361,7 +393,6 @@ export default {
             };
             await axios(options)
             .then((response) => {
-                console.log(response)
                 const blob =  new Blob([response.data],{type: 'application/pdf'});
                 const objectUrl = URL.createObjectURL(blob);
                 printJS(objectUrl);
@@ -375,7 +406,6 @@ export default {
                 this.stickers()
             })
             .catch((error) => {
-                console.log(error)
                 this.$toast.error(error.response.data.detail, {
                     position: "bottom-left",
                     timeout: 5000,
@@ -408,7 +438,9 @@ export default {
         },
     },
     mounted(){
-        this.stickers()
+        if (localStorage.getItem('item_id')){
+            this.stickers()
+        }
         this.upload = false
     }  
 }
