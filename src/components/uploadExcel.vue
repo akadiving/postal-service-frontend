@@ -22,7 +22,7 @@
                         <v-card
                             v-ripple="{ class: `secondary--text`}"
                             elevation="0"
-                            href="../assets/Sample Form.xlsx" download
+                            @click="getExcel"
                         >
                             <v-avatar
                             size="64"
@@ -215,6 +215,43 @@ export default {
             })
             .catch((error)=>{
                 console.log(error)
+            })
+        },
+        async getExcel(){
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `https://apimyposta.online/items/get-excel/`;
+            const options = {
+                method: 'GET',
+                baseURL: baseURL,
+                responseType: "blob",
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                }, 
+            };
+            await axios(options)
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `Sample-Form.xls`);
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch((error) => {
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
             })
         },
         deleteItems(){
