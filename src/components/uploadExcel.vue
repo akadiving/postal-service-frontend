@@ -230,10 +230,10 @@ export default {
             };
             await axios(options)
             .then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
+               const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'}));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', `Sample-Form.xls`);
+                link.setAttribute('download', `Sample-Form.xlsx`);
                 document.body.appendChild(link);
                 link.click();
             })

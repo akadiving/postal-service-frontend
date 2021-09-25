@@ -1514,7 +1514,6 @@ export default {
             console.log(options.data)
             axios(options)
             .then((response) => {
-                console.log(response)
                 this.itemSearch()
                 this.changeManifest = false
                 this.$toast.success('მანიფესტი შეცვლილია', {
@@ -1688,7 +1687,6 @@ export default {
             }
             await axios(options)
             .then((response) => {
-                console.log(response)
                 const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
                 const link = document.createElement('a');
                 link.href = url;
