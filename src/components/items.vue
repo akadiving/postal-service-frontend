@@ -156,12 +156,14 @@
         
         <div>
         <v-data-table
+            style="{overflow: auto; z-index: 1;}"
             v-model="selected"
             :headers="headers"
             :items="items"
             class="elevation-0 overflow-y-auto mx-auto"
             fixed-header
             show-select
+            disable-pagination
             no-data-text='მონაცემები არ არსებობს'
             no-results-text='მონაცემები ვერ მოიძებნა'
             :search="search"
@@ -170,7 +172,7 @@
             loading-text="მონაცემები იტვირთება"
             show-expand
             hide-default-footer
-            height="625px"
+            height="450"
         >
             <template v-slot:top>
                 <v-toolbar flat style="{overflow: auto; z-index: 1;}">
@@ -775,6 +777,7 @@ import axios from 'axios'
 import router from "../router/index";
 import countries from '../data.json'
 import currency from '../currency.json'
+
 export default {
     name: 'Items',
     data: ()=>({
@@ -951,6 +954,7 @@ export default {
                 this.currentUrl = response.data.next
                 this.totalItems = response.data.count
                 this.loadingItems = false
+                console.log(this.items)
             })
             .catch((error) => {
                 console.log(error)
@@ -1359,6 +1363,7 @@ export default {
                 });
                 this.newSelected = []
                 this.selected = []
+                this.itemSearch()
             })
             .catch((error) => {
                 console.log(error)

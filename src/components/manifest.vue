@@ -56,6 +56,7 @@
         </v-container>
         
         <v-data-table
+            style="{overflow: auto; z-index: 1;}"
             :headers="headers"
             :items="manifest"
             class="elevation-0 overflow-y-auto mx-auto"
@@ -67,7 +68,7 @@
             hide-default-footer
             :loading='loadingManifest'
             loading-text="მონაცემები იტვირთება"
-            height="625px"
+            height="430px"
             :footer-props="{
                     itemsPerPageOptions:[-1]
                 }"

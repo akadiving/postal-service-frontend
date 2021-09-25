@@ -9,8 +9,6 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import vueCountryRegionSelect from 'vue-country-region-select'
 
-
-
 Vue.use(vueCountryRegionSelect)
 
 Vue.use(VueSignaturePad);
@@ -21,7 +19,6 @@ const options = {
 };
 
 Vue.use(Toast, options);
-
 
 Vue.config.productionTip = false;
 
