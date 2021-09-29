@@ -92,7 +92,7 @@
                                 class="ma-2"
                                 @click="deleteItems"
                                 >
-                                    ამანათების ჭაშლა
+                                    ამანათების წაშლა
                             </v-btn>
                             <v-dialog v-model="upload" 
                                 persistent
