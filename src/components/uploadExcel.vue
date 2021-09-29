@@ -22,7 +22,7 @@
                         <v-card
                             v-ripple="{ class: `secondary--text`}"
                             elevation="0"
-                            @click="getExcel"
+                            href="/files/Sample-Form.xlsx" download
                         >
                             <v-avatar
                             size="64"
