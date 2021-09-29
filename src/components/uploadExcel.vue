@@ -22,7 +22,7 @@
                         <v-card
                             v-ripple="{ class: `secondary--text`}"
                             elevation="0"
-                            @click="getExcel"
+                            href="/files/Sample-Form.xlsx" download
                         >
                             <v-avatar
                             size="64"
@@ -230,7 +230,7 @@ export default {
             };
             await axios(options)
             .then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'}));
+                const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.ms-excel'}));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', `Sample-Form.xlsx`);
@@ -273,6 +273,7 @@ export default {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `http://127.0.0.1:8000/items/upload-excel/`;
             var data = new FormData();
+            
             data.append('myfile', this.files);
             const options = {
                 method: 'POST',
