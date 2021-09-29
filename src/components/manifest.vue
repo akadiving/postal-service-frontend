@@ -532,8 +532,8 @@ export default {
                 }, 
             };
             axios(options)
-            .then((response) => {
-                console.log(response)
+            .then(() => {
+                
                 this.manifest.splice(this.editedIndex, 1)
                 this.closeDelete()
                 this.$toast('მანიფესტი გაუქმებულია', {

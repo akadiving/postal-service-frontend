@@ -177,7 +177,7 @@
             :loading='loadingItems'
             loading-text="მონაცემები იტვირთება"
             show-expand
-            height="625px"
+            height="420px"
             hide-default-footer
             :footer-props="{
                     itemsPerPageOptions:[-1]
