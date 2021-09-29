@@ -68,7 +68,7 @@
            hide-default-footer
            :loading='loadingManifest'
            loading-text="მონაცემები იტვირთება"
-           height="625px"
+           height="420px"
            :footer-props="{
                    itemsPerPageOptions:[-1]
                }"
