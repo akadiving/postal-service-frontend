@@ -1272,24 +1272,6 @@ export default {
             this.selectEditItem = item.id
             console.log(this.editedItem)
         },
-        deleteItem (item) {
-            this.editedIndex = this.items.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialogDelete = true
-            this.selectItem = item.id
-            this.newSelected = []
-            this.selected.push(item)
-   
-            this.selected.forEach(element => {
-                this.newSelected.push(element.id)
-            });
-
-            this.newSelected = [...new Set(this.newSelected)]
-            
-            console.log(this.newSelected)
-            
-            this.selected = []
-        },
         async showBarcode(item){
             this.barcodeDialog = true
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
@@ -1329,6 +1311,24 @@ export default {
                     rtl: false
                 });
             })
+        },
+        deleteItem (item) {
+            this.editedIndex = this.items.indexOf(item)
+            this.editedItem = Object.assign({}, item)
+            this.dialogDelete = true
+            this.selectItem = item.id
+            this.newSelected = []
+            this.selected.push(item)
+   
+            this.selected.forEach(element => {
+                this.newSelected.push(element.id)
+            });
+
+            this.newSelected = [...new Set(this.newSelected)]
+            
+            console.log(this.newSelected)
+            
+            this.selected = []
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
@@ -1386,13 +1386,6 @@ export default {
                 }
             })  
         },
-        close () {
-            this.dialog = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
-            })
-        },
         closeDelete () {
             this.dialogDelete = false
             this.$nextTick(() => {
@@ -1405,6 +1398,13 @@ export default {
             this.$nextTick(() => {
                 this.newSelected = []
                 this.selected = []
+            })
+        },
+        close () {
+            this.dialog = false
+            this.$nextTick(() => {
+                this.editedItem = Object.assign({}, this.defaultItem)
+                this.editedIndex = -1
             })
         },
         save () {
