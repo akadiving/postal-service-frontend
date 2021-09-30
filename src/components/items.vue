@@ -991,12 +991,12 @@ export default {
             }
         },
         clearButtonEnd(){
-        if(!this.date_start){
-        this.itemSearch()
-        this.date_end = ''
-        } else {
-        this.date_end = ''
-        }
+            if(!this.date_start){
+                this.itemSearch()
+                this.date_end = ''
+            } else {
+                this.date_end = ''
+            }
         },
         filterByDate(){
             let baseURL = `https://apimyposta.online/items/filter-by-date/`;
