@@ -1257,7 +1257,6 @@ export default {
             this.dialogSignature = true
             this.newSelected = `${item.id}`
         },
-
         editItem (item) {
             this.editedIndex = this.items.indexOf(item)
             console.log(this.editedItem)
@@ -1272,13 +1271,79 @@ export default {
             this.selectItem = item.id
             this.newSelected = []
             this.selected.push(item)
-
+   
             this.selected.forEach(element => {
                 this.newSelected.push(element.id)
             });
 
             this.newSelected = [...new Set(this.newSelected)]
             
+            console.log(this.newSelected)
+            
+            this.selected = []
+        },
+        deleteItemConfirm () {
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `https://myposta.online/items/bulk-delete/`;
+            const options = {
+                method: 'DELETE',
+                baseURL: baseURL,
+                timeout: 5000,
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                },
+                data: {id: this.newSelected}
+            };
+            axios(options)
+            .then((response) => {
+                console.log(response)
+                this.items.splice(this.editedIndex, 1)
+                this.closeDelete()
+                this.$toast.success('ამანათი გაუქმებულია', {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+                this.newSelected = []
+                this.selected = []
+                this.itemSearch()
+            })
+            .catch((error) => {
+                console.log(error)
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+                if(error.response.data.detail == 'Given token not valid for any token type'){
+                    this.logout()
+                }
+            })  
+        },
+        closeDelete () {
+            this.dialogDelete = false
+            this.$nextTick(() => {
+            this.editedItem = Object.assign({}, this.defaultItem)
+            this.editedIndex = -1
+            })
         },
         async showBarcode(item){
             this.barcodeDialog = true
@@ -1320,73 +1385,11 @@ export default {
                 });
             })
         },
-        deleteItemConfirm () {
-            let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://apimyposta.online/items/bulk-delete/`;
-            const options = {
-                method: 'DELETE',
-                baseURL: baseURL,
-                timeout: 5000,
-                headers: {
-                    Authorization: 'Bearer ' + accessToken.value
-                },
-                data: {id: this.newSelected}
-            };
-            axios(options)
-            .then((response) => {
-                console.log(response)
-                this.items.splice(this.editedIndex, 1)
-                this.closeDelete()
-                this.$toast.success('ამანათი გაუქმებულია', {
-                    position: "bottom-left",
-                    timeout: 5000,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: false,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false
-                });
-                this.newSelected = []
-                this.selected = []
-            })
-            .catch((error) => {
-                console.log(error)
-                this.$toast.error(error.response.data.detail, {
-                    position: "bottom-left",
-                    timeout: 5000,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: false,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false
-                });
-                if(error.response.data.detail == 'Given token not valid for any token type'){
-                    this.logout()
-                }
-            })  
-        },
         close () {
             this.dialog = false
             this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
-            })
-        },
-        closeDelete () {
-            this.dialogDelete = false
-            this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            this.editedIndex = -1
             })
         },
         closeChangeManifest () {
