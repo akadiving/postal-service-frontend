@@ -255,18 +255,20 @@ export default {
             })
         },
         deleteItems(){
-            localStorage.removeItem('item_id')
-            
+            localStorage.removeItem('item_id');
+            localStorage.setItem('item_id', JSON.stringify([]))
+            this.stickers()
         },
         removeItem(item){
             var arr = JSON.parse( localStorage.getItem('item_id'));
-                const index = arr.indexOf(item);
-                if (index > -1) {
-                    arr.splice(index, 1);
-                    console.log(arr)
-                    localStorage.setItem('item_id', JSON.stringify(arr))
-                }
-                this.stickers()
+            const index = arr.indexOf(item);
+            console.log(index)
+            if (index > -1) {
+                arr.splice(index, 1);
+                console.log(arr)
+                localStorage.setItem('item_id', JSON.stringify(arr))
+            }
+            this.stickers()
         },
         uploadExcel(){
             this.upload = true
