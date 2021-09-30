@@ -1514,6 +1514,7 @@ export default {
             console.log(options.data)
             axios(options)
             .then((response) => {
+                console.log(response)
                 this.itemSearch()
                 this.changeManifest = false
                 this.$toast.success('მანიფესტი შეცვლილია', {
