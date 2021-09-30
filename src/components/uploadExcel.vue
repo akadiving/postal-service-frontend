@@ -255,7 +255,8 @@ export default {
             })
         },
         deleteItems(){
-            localStorage.removeItem('item_id')
+            llocalStorage.removeItem('item_id');
+            localStorage.setItem('item_id', JSON.stringify([]))
             this.stickers()
         },
         removeItem(item){
