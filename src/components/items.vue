@@ -1278,13 +1278,11 @@ export default {
 
             this.newSelected = [...new Set(this.newSelected)]
             
-            console.log(this.newSelected)
-            
             this.selected = []
         },
         deleteItemConfirm () {
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
-            const baseURL = `https://myposta.online/items/bulk-delete/`;
+            const baseURL = `https://apimyposta.online/items/bulk-delete/`;
             const options = {
                 method: 'DELETE',
                 baseURL: baseURL,
