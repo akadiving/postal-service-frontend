@@ -625,9 +625,10 @@ export default {
     components: {
 
     },
-    data: ()=>({
+        data: ()=>({
         valid: false,
         dialog: false,
+        stickerDialog: false,
         newItem: {
             sender_name: '',
             sender_surname: '',
@@ -645,7 +646,7 @@ export default {
             currency: '',
             in_manifest: '',
             manifest_number: null,
-            description: null,
+            description: '',
         },
         manifestList: [],
         currency: currency,
@@ -664,6 +665,7 @@ export default {
         receiverNumberRules: [
             v => /^\d+$/.test(v) || 'გთხოვთ სწორად შეიყვანოთ ტელეფონის ნომერი',
         ],
+        createdItem: [],
     }),
 
     methods: {
