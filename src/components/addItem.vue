@@ -819,10 +819,48 @@ export default {
                 
             })
         },
+        async showBarcode(item){
+            this.barcodeDialog = true
+            let accessToken = JSON.parse(sessionStorage.getItem('access'))
+            const baseURL = `https://apimyposta.online/items/generate_sticker/${item}`;
+            const options = {
+                method: 'GET',
+                baseURL: baseURL,
+                responseType: "blob",
+                headers: {
+                    Authorization: 'Bearer ' + accessToken.value
+                }, 
+            };
+            await axios(options)
+            .then((response) => {
+                const blob = new Blob([response.data],{type: 'application/pdf'});
+                const objectUrl = URL.createObjectURL(blob);
+                this.pdfsrc = objectUrl;
+                let tab = window.open();
+                tab.location.href = objectUrl;
+                this.barcodeDialog = false
+            })
+            .catch((error) => {
+                console.log(error)
+                this.$toast.error(error.response.data.detail, {
+                    position: "bottom-left",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: false,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false
+                });
+            })
+        },
     },
     mounted(){
         this.manifestId()
-        console.log(this.currency)
     }  
 }
 </script>
