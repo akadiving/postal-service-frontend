@@ -554,10 +554,66 @@
         </div>
         </template>
         <!-- add item preview -->
+
+        <!-- sticker print dialog -->   
+        <template>
+            <div class="text-center">
+                <v-dialog
+                v-model="stickerDialog"
+                width="300"
+                >
+                <v-card>
+                    <v-card-title>
+                        <span class="text-h5">სტიკერის ბეჭდვა</span>
+                    </v-card-title>
+
+                        <v-container>
+                            <v-row justify='center'>
+                                <v-col
+                                    cols="12"
+                                    sm="6"
+                                    md="4"
+                                    id="package"
+                                >
+                                    <v-card
+                                        v-ripple="{ class: `secondary--text`}"
+                                        @click='showBarcode(createdItem.id)'
+                                        elevation="0"
+                                    >
+                                        
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+
+                    <v-card-actions class='ml-12'>
+                        <v-btn
+                            flat
+                            color="blue"
+                            outlined
+                            >
+                            <v-icon
+                            color="blue darken-2"
+                            x-large>
+                                mdi-printer
+                            </v-icon>
+                        </v-btn>
+                        <v-btn
+                            color="red"
+                            outlined
+                            @click="stickerDialog = false"
+                        >
+                            გამოსვლა
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+                </v-dialog>
+            </div>
+        </template>
+        <!-- sticker print dialog -->
         </v-card-actions>
     </v-card>  
 </template>
-
 <script>
 import axios from 'axios'
 import router from "../router/index";
