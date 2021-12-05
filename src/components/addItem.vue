@@ -670,6 +670,7 @@ export default {
 
     methods: {
         addItem(){
+            this.stickerDialog = false
             let accessToken = JSON.parse(sessionStorage.getItem('access'))
             const baseURL = `https://apimyposta.online/items/add/`;
             if (this.newItem.description == null){
@@ -686,7 +687,9 @@ export default {
             };
             axios(options)
             .then((response) => {
-                console.log(response)
+                this.createdItem = []
+                this.createdItem = response.data
+                this.stickerDialog = true
                 this.$toast.success('ამანათი დამატებულია', {
                     position: "bottom-left",
                     timeout: 5000,
