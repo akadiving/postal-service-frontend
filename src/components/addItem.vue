@@ -591,6 +591,7 @@
                             flat
                             color="blue"
                             outlined
+                            @click="showBarcode(createdItem.id)"
                             >
                             <v-icon
                             color="blue darken-2"
